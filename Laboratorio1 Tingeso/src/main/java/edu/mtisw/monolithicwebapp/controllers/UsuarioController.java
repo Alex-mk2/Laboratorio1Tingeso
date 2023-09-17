@@ -15,12 +15,15 @@ import java.util.ArrayList;
 public class UsuarioController {
     @Autowired
 	UsuarioService usuarioService;
-
-    @GetMapping("/listar")
-	public String listar(Model model) {
-    	ArrayList<UsuarioEntity>usuarios=usuarioService.obtenerUsuarios();
+    @GetMapping("/RegistrarUsuario")
+	public String RegistrarUsuario(Model model) {
+    	ArrayList<UsuarioEntity>usuarios= usuarioService.obtenerUsuarios();
     	model.addAttribute("usuarios",usuarios);
-		return "index";
+		return "Usuario";
 	}
 
+	@GetMapping("/AgregarUsuario")
+	public String AgregarUsuario(UsuarioEntity NewUsuario){
+		return "Agregar";
+	}
 }
