@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Agregar Proveedor</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+</head>
+<body>
+<!-- Encabezado -->
+<header class="bg-primary text-white py-3">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-1">
+        <a href="/" class="text-dark"><i class="bi bi-arrow-left" style="font-size: xx-large"></i></a>
+      </div>
+      <div class="col-10 text-center">
+        <h1 class="mb-0">Agregar Estudiante</h1>
+      </div>
+      <div class="col-1"></div>
+    </div>
+  </div>
+</header>
+<!-- Contenido principal -->
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <form th:action="@{/estudiante/save}" th:object="${estudiante}" method="post">
+        <div class="form-group">
+          <label th:for="nombres">Nombres:</label>
+          <input type="text" class="form-control" th:field="*{nombres}" required>
+        </div>
+        <div class="form-group">
+          <label th:for="apellidos">Apellidos:</label>
+          <input type="text" class="form-control" th:field="*{apellidos}" required>
+        </div>
+        <div class="form-group">
+          <label th:for="email">Email:</label>
+          <input type="text" class="form-control" th:field="*{email}" required>
+        </div>
+        <div class="form-group">
+          <label th:for="rut">Rut: </label>
+          <input type="text" class="form-control" th:field="*{rut}" required>
+        </div>
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="btn btn-primary mx-3">Guardar</button>
+          <a href="/" class="btn btn-light mx-3">Volver</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
