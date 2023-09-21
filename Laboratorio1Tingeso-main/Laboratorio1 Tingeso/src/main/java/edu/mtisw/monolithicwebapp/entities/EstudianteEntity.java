@@ -18,4 +18,8 @@ public class EstudianteEntity {
     private String apellidos;
     private String email;
     private String rut;
+    private String fecha_nacimiento;
+    private String tipo_establecimiento;
+    private String nombre_establecimiento;
+    private int egreso;
 }
