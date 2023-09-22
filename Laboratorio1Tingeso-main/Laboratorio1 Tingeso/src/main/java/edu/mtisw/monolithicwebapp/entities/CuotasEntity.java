@@ -19,6 +19,5 @@ public class CuotasEntity{
     private Long id;
     private Integer matricula;
     private Integer arancel;
-    private Double descuentoTipoColegioProcedencia;
-    private Double tiempoEgresado;
+
 }
