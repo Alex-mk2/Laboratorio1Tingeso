@@ -2,51 +2,55 @@ package edu.mtisw.monolithicwebapp.services;
 import edu.mtisw.monolithicwebapp.entities.CuotasEntity;
 import edu.mtisw.monolithicwebapp.entities.EstudianteEntity;
 import edu.mtisw.monolithicwebapp.repositories.CuotasRepository;
-import edu.mtisw.monolithicwebapp.repositories.EstudianteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 
 @Service
-public class CuotasService {
+public class CuotasService{
     @Autowired
     CuotasRepository cuotasRepository;
-    @Autowired
-    EstudianteRepository estudianteRepository;
 
-    public double calcularDescuentoTipoEstablecimiento(String tipo_establecimiento){
-        if("Municipal".equals(tipo_establecimiento)){
-            return 0.2;
-        } else if ("Subvencionado".equals(tipo_establecimiento)){
-            return 0.1;
-        }else{
-            return 0.0;
-        }
+    public void guardarCuotas(CuotasEntity cuotas){
+        cuotasRepository.save(cuotas);
     }
 
-    public double calcularDescuentoPorEgreso(int egreso){
-        if(egreso < 1){
-            return 0.15;
-        } else if (egreso <= 2) {
-            return 0.08;
-        } else if (egreso <= 4){
-            return 0.04;
-        }else{
-            return 0.0;
+    public double calcularTipoColegioProcedencia(List<EstudianteEntity> listaEstudiantes, CuotasEntity cuotas) {
+        double montoArancel = 0.0;
+        for (EstudianteEntity estudianteEntity : listaEstudiantes) {
+            if ("Municipal".equals(estudianteEntity.getTipo_establecimiento())) {
+                montoArancel += 0.2 * cuotas.getMontoTotalArancel();
+            } else if ("Subvencionado".equals(estudianteEntity.getTipo_establecimiento())) {
+                montoArancel += 0.1 * cuotas.getMontoTotalArancel();
+            }
         }
+        return montoArancel;
     }
 
-    public double calcularDescuentoPorPuntaje(int puntaje){
-        if(puntaje >= 950 && puntaje <= 1000){
-            return 0.1;
-        } else if (puntaje>=900 && puntaje <= 949){
-            return 0.05;
-        } else if (puntaje >= 850 && puntaje <= 899){
-            return 0.02;
-        }else{
-            return 0.0;
+    public double calcularPorTiempoEgreso(List<EstudianteEntity> listaEstudiantes, CuotasEntity cuotas){
+        double montoArancel = 0.0;
+        for(EstudianteEntity estudianteEntity : listaEstudiantes){
+            if(estudianteEntity.getEgreso() < 1){
+                montoArancel+= 0.15 * cuotas.getMontoTotalArancel();
+            } else if (estudianteEntity.getEgreso() <= 2){
+                montoArancel+= 0.08 * cuotas.getMontoTotalArancel();
+            } else if (estudianteEntity.getEgreso() <= 4){
+                montoArancel+= 0.02 * cuotas.getMontoTotalArancel();
+            }
+        }
+        return montoArancel;
+    }
+
+    public void generarCuotasEstudiantes(List<EstudianteEntity> listaEstudiantes, CuotasEntity cuotas){
+        for(EstudianteEntity estudianteEntity: listaEstudiantes){
+            if("Municipal".equals(estudianteEntity.getTipo_establecimiento())){
+                cuotas.setNumeroCuotasPactadas(10);
+            } else if ("Subvencionado".equals(estudianteEntity.getTipo_establecimiento())){
+                cuotas.setNumeroCuotasPactadas(7);
+            } else if ("Privado".equals(estudianteEntity.getTipo_establecimiento())){
+               cuotas.setNumeroCuotasPactadas(4);
+            }
         }
     }
 }
