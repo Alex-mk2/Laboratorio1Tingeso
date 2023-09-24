@@ -13,7 +13,7 @@ public class CuotasEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Long id;
+    private Long id_cuota;
     private String rut_estudiante;
     private Integer numero_examenes_rendidos;
     private Double promedio_puntaje_examenes;
