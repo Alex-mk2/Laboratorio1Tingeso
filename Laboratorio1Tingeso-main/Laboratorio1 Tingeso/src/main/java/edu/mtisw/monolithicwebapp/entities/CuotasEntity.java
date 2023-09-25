@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
+
 @Entity
 @Table(name = "cuotas")
 @Data
@@ -16,7 +17,7 @@ public class CuotasEntity{
     private Long id_cuota;
     private String rut_estudiante;
     private Integer numero_examenes_rendidos;
-    private Double promedio_puntaje_examenes;
+    private Integer promedio_puntaje_examenes;
     private Integer montoTotalArancel; //Arancel total por ejemplo: 1.500.000
     private String tipoPago;
     private Integer numeroCuotasPactadas;

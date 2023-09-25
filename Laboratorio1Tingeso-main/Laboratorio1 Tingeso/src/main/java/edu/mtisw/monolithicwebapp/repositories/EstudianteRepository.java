@@ -7,6 +7,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EstudianteRepository extends JpaRepository<EstudianteEntity, Long> {
     EstudianteEntity findByEmail(String email);
-
-    EstudianteEntity buscarPorId(Long id);
 }

@@ -35,7 +35,5 @@ public class EstudianteService {
         }
     }
 
-    public EstudianteEntity buscarPorId(Long id){
-        return estudianteRepository.buscarPorId(id);
-    }
+
 }
