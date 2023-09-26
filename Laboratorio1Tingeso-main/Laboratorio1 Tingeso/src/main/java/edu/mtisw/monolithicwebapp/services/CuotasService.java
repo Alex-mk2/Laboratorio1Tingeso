@@ -17,7 +17,6 @@ public class CuotasService{
     }
 
 
-
     public double opcionPagoArancelEstudiante(EstudianteEntity estudiante, CuotasEntity cuotas){
         double montoTotal = 0.0;
         if("Contado".equals(cuotas.getTipoPago())){
@@ -76,5 +75,19 @@ public class CuotasService{
             return 0.0;
         }
         return 0;
+    }
+
+    public double calcularArancelTotalEstudiante(EstudianteEntity estudiante, CuotasEntity cuotas){
+        double arancelTotal = 0.0;
+        double opcionPago = 0.0;
+        double tiempoEgreso = 0.0;
+        tiempoEgreso+= calcularPorTiempoEgreso(estudiante, cuotas);
+        opcionPago+= opcionPagoArancelEstudiante(estudiante, cuotas);
+        arancelTotal+= tiempoEgreso + opcionPago;
+        int cantidadCuotas = cantidadCuotasEstablecimiento(estudiante);
+        if(cantidadCuotas > 0){
+            arancelTotal*= cantidadCuotas/10.0;
+        }
+        return arancelTotal;
     }
 }
