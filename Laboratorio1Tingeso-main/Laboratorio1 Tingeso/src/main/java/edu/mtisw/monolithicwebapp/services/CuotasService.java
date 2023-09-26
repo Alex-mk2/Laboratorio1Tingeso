@@ -64,4 +64,17 @@ public class CuotasService{
         }
         return cantidadCuotas;
     }
+
+    public double promedioPruebasRendidas(CuotasEntity cuotas){
+        if(cuotas.getPromedio_puntaje_examenes() >= 950 && cuotas.getPromedio_puntaje_examenes() < 1000){
+            return 0.10;
+        } else if (cuotas.getPromedio_puntaje_examenes() >= 900 && cuotas.getPromedio_puntaje_examenes() < 949){
+            return 0.05;
+        } else if (cuotas.getPromedio_puntaje_examenes() >= 850 && cuotas.getPromedio_puntaje_examenes() < 899) {
+            return 0.02;
+        } else if (cuotas.getPromedio_puntaje_examenes() < 850){
+            return 0.0;
+        }
+        return 0;
+    }
 }
