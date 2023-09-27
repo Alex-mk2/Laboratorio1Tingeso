@@ -1,6 +1,5 @@
 package edu.mtisw.monolithicwebapp.controllers;
-import edu.mtisw.monolithicwebapp.entities.EstudianteEntity;
-import edu.mtisw.monolithicwebapp.services.EstudianteService;
+import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,23 +11,23 @@ import java.util.ArrayList;
 
 @Controller
 @RequestMapping
-public class EstudianteController {
+public class estudianteController {
 	@Autowired
-	EstudianteService estudianteService;
+	edu.mtisw.monolithicwebapp.services.estudianteService estudianteService;
 	@GetMapping("/MostrarEstudiante/listar")
 	public String MostrarEstudiante(Model model) {
-		ArrayList<EstudianteEntity> estudiante= estudianteService.obtenerEstudiante();
+		ArrayList<estudianteEntity> estudiante= estudianteService.obtenerEstudiante();
 		model.addAttribute("estudiante",estudiante);
 		return "Lista-Estudiantes";
 	}
 	@GetMapping("/estudiante/agregar")
 	public String guardarEstudiante(Model model){
-		model.addAttribute("estudiante", new EstudianteEntity());
+		model.addAttribute("estudiante", new estudianteEntity());
 		return "nuevo-estudiante";
 	}
 
 	@PostMapping(value = "estudiante/save")
-	public String guardarEstudiante(@ModelAttribute("estudiante") EstudianteEntity estudianteEntity){
+	public String guardarEstudiante(@ModelAttribute("estudiante") estudianteEntity estudianteEntity){
 		estudianteService.guardarEstudiante(estudianteEntity);
 		return "redirect:/";
 	}

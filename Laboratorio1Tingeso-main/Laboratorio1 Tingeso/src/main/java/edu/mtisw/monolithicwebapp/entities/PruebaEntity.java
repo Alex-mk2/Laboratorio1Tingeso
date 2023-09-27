@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "pruebas")
@@ -14,8 +15,10 @@ public class PruebaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Long idPrueba;
-    private String rut;
-    private String fecha_examen;
-    private int puntaje;
+    private Long id_Prueba;
+    @ManyToOne
+    @JoinColumn(name = "estudiante_id", referencedColumnName = "id_estudiante", nullable = false)
+    private estudianteEntity estudiante;
+    private LocalDate fecha_examen;
+    private Integer puntaje_obtenido;
 }
