@@ -1,5 +1,4 @@
 package edu.mtisw.monolithicwebapp.controllers;
-
 import edu.mtisw.monolithicwebapp.entities.pagoArancelEntity;
 import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
 import edu.mtisw.monolithicwebapp.services.pagoArancelService;
@@ -9,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class pagoArancelController {
@@ -17,19 +17,16 @@ public class pagoArancelController {
     @Autowired
     edu.mtisw.monolithicwebapp.services.estudianteService estudianteService;
 
-    @GetMapping("/cuotas/calcularTotal")
+    @GetMapping("/Arancel-estudiante")
     public String mostrarFormulario(Model model){
-        pagoArancelEntity cuotas = new pagoArancelEntity();
-        estudianteEntity estudiante = new estudianteEntity();
-        model.addAttribute("cuotas", cuotas);
-        model.addAttribute("estudiante", estudiante);
+        boolean mensaje = pagoArancelService.calcularArancel();
+        model.addAttribute("mensaje", mensaje);
         return "formulario-cuotas";
     }
 
-    @PostMapping("/cuotas/calcularTotal")
-    public String calcularTotalCuotas(@ModelAttribute("cuotas") pagoArancelEntity cuotas, @ModelAttribute("estudiante") estudianteEntity estudiante, Model model){
-        double ArancelTotal = pagoArancelService.calcularArancelTotalEstudiante(estudiante, cuotas);
-        model.addAttribute("ArancelTotal", ArancelTotal);
+    @PostMapping("/plantilla-arancel")
+    public String calcularTotalCuotas(Model model){
+
         return "arancel";
     }
 }

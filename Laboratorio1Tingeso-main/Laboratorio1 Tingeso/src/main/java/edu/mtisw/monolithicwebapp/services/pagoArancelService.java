@@ -4,8 +4,8 @@ import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
 import edu.mtisw.monolithicwebapp.repositories.pagoArancelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Service
@@ -14,16 +14,20 @@ public class pagoArancelService {
     pagoArancelRepository pagoArancelRepository;
     @Autowired
     edu.mtisw.monolithicwebapp.repositories.estudianteRepository estudianteRepository;
+    @Autowired
+    edu.mtisw.monolithicwebapp.repositories.pruebaRepository pruebaRepository;
 
     private static final Double Arancel = 1500000.0;
     private static final Double Matricula = 70000.0;
 
-    public void guardarCuotas(pagoArancelEntity cuotas){
-        pagoArancelRepository.save(cuotas);
+    public void guardarCuotas(pagoArancelEntity pagoArancel){
+        pagoArancelRepository.save(pagoArancel);
     }
 
-    //Dom: Estudiante entity, aqui utilizamos el estudiante como base
-    //Rec: cuotas perteneciente a cuotasEntity
+    public List<pagoArancelEntity> listaArancel(){
+        return pagoArancelRepository.findAll();
+    }
+
     public pagoArancelEntity crearPlanillaEstudiante(estudianteEntity estudiante){
         pagoArancelEntity pagoArancel = new pagoArancelEntity();
         pagoArancel.setEstudiante(estudiante);
@@ -31,8 +35,18 @@ public class pagoArancelService {
         pagoArancel.setNumeroTotalCuotasPactadas(numeroCuotasEstablecimiento);
         double descuentoArancel = descuentoPorTipoProcedencia(estudiante, pagoArancel.getTipoPago()) + descuentoPorEgreso(estudiante);
         pagoArancel.setSaldoPorPagar(descuentoArancel);
-        pagoArancel.setMontoTotalArancel(Arancel + Matricula);
+        double arancelTotal = Arancel + Matricula;
+        pagoArancel.setMontoTotalArancel(arancelTotal);
+        pagoArancel.setNombres(estudiante.getNombres());
+        pagoArancel.setRut(estudiante.getRut());
+        pagoArancel.setFechaUltimoPago(LocalDate.now());
         return pagoArancel;
+    }
+
+    public boolean calcularArancel(){
+        estudianteEntity estudiante = null;
+        pagoArancelEntity pagoArancel = crearPlanillaEstudiante(estudiante);
+        return true;
     }
 
     public double descuentoPorTipoProcedencia(estudianteEntity estudiante, String tipoPago){
@@ -84,5 +98,17 @@ public class pagoArancelService {
             descuentoTotal = 0.0;
         }
         return descuentoTotal;
+    }
+
+    public double descuentoPorPrueba(double promedioPuntaje){
+        if(promedioPuntaje >= 950 && promedioPuntaje < 1000){
+            return 0.10;
+        } else if (promedioPuntaje >= 900 && promedioPuntaje < 949){
+            return 0.05;
+        } else if (promedioPuntaje >= 850 && promedioPuntaje < 899) {
+            return 0.02;
+        }else{
+            return 0.0;
+        }
     }
 }
