@@ -19,7 +19,7 @@
 <!-- Encabezado -->
 <header class="bg-primary text-white py-3">
   <div class="container">
-    <h1 class="mb-0">Milkstgo</h1>
+    <h1 class="mb-0">TopEducation 2023</h1>
   </div>
 </header>
 <!-- Barra de navegación -->
@@ -31,7 +31,7 @@
             aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand" th:href="@{/cuotas/calcularTotal}">Arancel total estudiante</a>
+    <a class="navbar-brand" th:href="@{/cuotas/calcularTotal}"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav"
             aria-expanded="false" aria-label="Toggle navigation">
@@ -47,14 +47,36 @@
         <div class="card-body">
           <h5 class="card-title text-center mb-4">Detalle arancel del estudiante</h5>
           <table class="table">
-            <tbody>
+            <thead>
             <tr>
-              <th>Monto Final:</th>
-              <td th:text="${pago}"></td>
+              <th>Nombre</th>
+              <th>Rut</th>
+              <th>tipoPago</th>
+              <th>promedio de examenes rendidos</th>
+              <th>Monto total arancel</th>
+              <th>Fecha ultimo pago</th>
+              <th>Numero examenes rendidos</th>
+              <th>numero de cuotas pactadas</th>
+              <th>numero de cuotas pagadas</th>
+              <th>monto total pagado</th>
+              <th>saldo por pagar</th>
+              <th>numero cuotas con retraso</th>
             </tr>
-            <tr>
-              <th>Arancel Total:</th>
-              <td th:text="${'$' + arancelTotal}"></td>
+            </thead>
+            <tbody>
+            <tr th:each="pago : ${pagosArancel}">
+              <td th:text="${pago.getNombres()}"></td>
+              <td th:text="${pago.getRut()}"></td>
+              <td th:text="${pago.getTipoPago()}"></td>
+              <td th:text="${pago.getPromedioPuntajeExamenes()}"></td>
+              <td th:text="${pago.getMontoTotalArancel()}"></td>
+              <td th:text="${pago.getFechaUltimoPago()}"></td>
+              <td th:text="${pago.getNumeroExamenesRendidos()}"></td>
+              <td th:text="${pago.getNumeroTotalCuotasPactadas()}"></td>
+              <td th:text="${pago.getNumeroCuotasConRetraso()}"></td>
+              <td th:text="${pago.getNumeroCuotasPagadas()}"></td>
+              <td th:text="${pago.getMontoTotalPagado()}"></td>
+              <td th:text="${pago.getSaldoPorPagar()}"></td>
             </tr>
             </tbody>
           </table>

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface pagoArancelRepository extends JpaRepository<pagoArancelEntity, Long>{
 
+    pagoArancelEntity findEstudianteByRut(String rut);
 }

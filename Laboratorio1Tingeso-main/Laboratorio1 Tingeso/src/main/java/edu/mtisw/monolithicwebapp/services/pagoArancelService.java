@@ -18,7 +18,6 @@ public class pagoArancelService {
     edu.mtisw.monolithicwebapp.repositories.pruebaRepository pruebaRepository;
 
     private static final Double Arancel = 1500000.0;
-    private static final Double Matricula = 70000.0;
 
     public void guardarCuotas(pagoArancelEntity pagoArancel){
         pagoArancelRepository.save(pagoArancel);
@@ -28,31 +27,47 @@ public class pagoArancelService {
         return pagoArancelRepository.findAll();
     }
 
-    public pagoArancelEntity crearPlanillaEstudiante(estudianteEntity estudiante){
+    public pagoArancelEntity buscarEstudiante(String rut){
+        return pagoArancelRepository.findEstudianteByRut(rut);
+    }
+
+    public pagoArancelEntity crearPlanillaEstudiante(estudianteEntity estudiante) {
         pagoArancelEntity pagoArancel = new pagoArancelEntity();
         pagoArancel.setEstudiante(estudiante);
         int numeroCuotasEstablecimiento = cantidadCuotasEstablecimiento(estudiante);
         pagoArancel.setNumeroTotalCuotasPactadas(numeroCuotasEstablecimiento);
         double descuentoArancel = descuentoPorTipoProcedencia(estudiante, pagoArancel.getTipoPago()) + descuentoPorEgreso(estudiante);
-        pagoArancel.setSaldoPorPagar(descuentoArancel);
-        double arancelTotal = Arancel + Matricula;
-        pagoArancel.setMontoTotalArancel(arancelTotal);
+        double pagoTotal = Arancel - descuentoArancel;
+        double pagoPorCuota = pagoTotal / numeroCuotasEstablecimiento;
+        pagoArancel.setSaldoPorPagar(pagoPorCuota);
+        pagoArancel.setMontoTotalArancel(pagoTotal);
         pagoArancel.setNombres(estudiante.getNombres());
         pagoArancel.setRut(estudiante.getRut());
         pagoArancel.setFechaUltimoPago(LocalDate.now());
+        pagoArancel.setTipoPago(pagoArancel.getTipoPago());
+        System.out.println("Descuento Arancel: " + descuentoArancel);
+        System.out.println("Pago Total: " + pagoTotal);
+        System.out.println("Pago por Cuota: " + pagoPorCuota);
         return pagoArancel;
     }
 
-    public boolean calcularArancel(){
-        estudianteEntity estudiante = null;
-        pagoArancelEntity pagoArancel = crearPlanillaEstudiante(estudiante);
-        return true;
+
+    public boolean calcularArancel() {
+        List<estudianteEntity> listaEstudiante = estudianteRepository.findAll();
+        boolean lecturaEstudiante = false;
+        for (estudianteEntity estudiante : listaEstudiante) {
+            if (estudiante != null) {
+                crearPlanillaEstudiante(estudiante);
+                lecturaEstudiante = true;
+            }
+        }
+        return lecturaEstudiante;
     }
 
     public double descuentoPorTipoProcedencia(estudianteEntity estudiante, String tipoPago){
         String opcionPago = estudiante.getTipo_establecimiento();
         double descuentoTotal = 0.0;
-        double montoTotal = Arancel + Matricula;
+        double montoTotal = Arancel;
         if("Contado".equals(tipoPago)){
             descuentoTotal = montoTotal * 0.5;
         }
@@ -83,7 +98,7 @@ public class pagoArancelService {
     }
 
     public double descuentoPorEgreso(estudianteEntity estudiante){
-        double montoTotal = Arancel + Matricula;
+        double montoTotal = Arancel;
         double descuentoTotal = 0.0;
         int anioEgreso = estudiante.getEgreso();
         int anioActual = LocalDate.now().getYear();
