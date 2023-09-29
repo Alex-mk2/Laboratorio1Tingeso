@@ -3,6 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class estudianteEntity {
     private String fecha_nacimiento;
     private String tipo_establecimiento;
     private String nombre_establecimiento;
-    private int egreso;
+    private String egreso;
     @OneToMany(mappedBy = "estudiante", cascade = CascadeType.ALL)
     private List<pagoArancelEntity> pagoArancel;
     @OneToMany(mappedBy = "estudiante", cascade = CascadeType.ALL)

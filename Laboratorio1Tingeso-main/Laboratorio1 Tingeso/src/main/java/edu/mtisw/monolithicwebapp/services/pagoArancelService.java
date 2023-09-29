@@ -5,7 +5,6 @@ import edu.mtisw.monolithicwebapp.repositories.pagoArancelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.List;
 import java.time.temporal.ChronoUnit;
 
@@ -42,8 +41,9 @@ public class pagoArancelService {
         pagoArancel.setNombres(estudiante.getNombres());
         pagoArancel.setRut(estudiante.getRut());
         int numeroCuotasEstablecimiento = cantidadCuotasEstablecimiento(estudiante);
-        double descuentoArancel = (descuentoPorTipoProcedencia(estudiante) + descuentoPorEgreso(estudiante));
-        double pagoTotal = Arancel - descuentoArancel;
+        int descuentoEgreso = descuentoPorEgreso(estudiante);
+        double descuentoArancelProcedencia = (descuentoPorTipoProcedencia(estudiante));
+        double pagoTotal = Arancel  - descuentoEgreso - descuentoArancelProcedencia;
         double pagoPorCuota = pagoTotal / numeroCuotasEstablecimiento;
         pagoArancel.setMontoTotalArancel(pagoTotal);
         pagoArancel.setNumeroExamenesRendidos(0);
@@ -99,22 +99,30 @@ public class pagoArancelService {
         return cantidadCuotas;
     }
 
-    public double descuentoPorEgreso(estudianteEntity estudiante) {
-        double descuentoTotal = 0.0;
-        int anioEgreso = estudiante.getEgreso();
+
+
+    public int descuentoPorEgreso(estudianteEntity estudiante) {
+        int descuentoTotal = 0;
+        int arancel = 1500000;
+        String anioEgreso = estudiante.getEgreso();
+        int anioConvertido = Integer.parseInt(anioEgreso);
         int anioActual = LocalDate.now().getYear();
-        int diferenciaAniosEgreso = anioActual - anioEgreso;
+        int diferenciaAniosEgreso = anioActual - anioConvertido;
         if (diferenciaAniosEgreso < 1) {
-            descuentoTotal = 0.15;
+            descuentoTotal = 15;
         } else if (diferenciaAniosEgreso >= 1 && diferenciaAniosEgreso <= 2) {
-            descuentoTotal = 0.08;
+            descuentoTotal = 8;
         } else if (diferenciaAniosEgreso >= 3 && diferenciaAniosEgreso <= 4) {
-            descuentoTotal = 0.04;
+            descuentoTotal = 4;
         } else if (diferenciaAniosEgreso > 4) {
-            descuentoTotal = 0.0;
+            descuentoTotal = 0;
         }
-        return descuentoTotal * Arancel;
+
+        int descuento = (descuentoTotal * arancel) / 100;
+        return descuento;
     }
+
+
 
 
     public LocalDate fechaPago(){
