@@ -22,16 +22,10 @@
     <h1 class="mb-0">TopEducation 2023</h1>
   </div>
 </header>
-<!-- Barra de navegación -->
+<!-- Barra de navegación formulario cuotas-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
   <div class="container">
-    <a class="navbar-brand" th:href="@{/}">Inicio</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <a class="navbar-brand" th:href="@{/cuotas/calcularTotal}"></a>
+    <a class="navbar-brand" th:href="@{/formulario-cuotas}">Generar formulario estudiante</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav"
             aria-expanded="false" aria-label="Toggle navigation">
@@ -49,34 +43,38 @@
           <table class="table">
             <thead>
             <tr>
+              <th>id</th>
               <th>Nombre</th>
               <th>Rut</th>
-              <th>tipoPago</th>
-              <th>promedio de examenes rendidos</th>
-              <th>Monto total arancel</th>
-              <th>Fecha ultimo pago</th>
-              <th>Numero examenes rendidos</th>
-              <th>numero de cuotas pactadas</th>
-              <th>numero de cuotas pagadas</th>
-              <th>monto total pagado</th>
-              <th>saldo por pagar</th>
-              <th>numero cuotas con retraso</th>
+              <th>Tipo de Pago</th>
+              <th>Promedio de Exámenes Rendidos</th>
+              <th>Monto Total de Arancel</th>
+              <th>Fecha Último Pago</th>
+              <th>Número de Exámenes Rendidos</th>
+              <th>Número de Cuotas Pactadas</th>
+              <th>Número de Cuotas Pagadas</th>
+              <th>Monto Total Pagado</th>
+              <th>Saldo por Pagar</th>
+              <th>Número de Cuotas con Retraso</th>
+              <th> Fecha pago</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="pago : ${pagosArancel}">
-              <td th:text="${pago.getNombres()}"></td>
-              <td th:text="${pago.getRut()}"></td>
-              <td th:text="${pago.getTipoPago()}"></td>
-              <td th:text="${pago.getPromedioPuntajeExamenes()}"></td>
-              <td th:text="${pago.getMontoTotalArancel()}"></td>
-              <td th:text="${pago.getFechaUltimoPago()}"></td>
-              <td th:text="${pago.getNumeroExamenesRendidos()}"></td>
-              <td th:text="${pago.getNumeroTotalCuotasPactadas()}"></td>
-              <td th:text="${pago.getNumeroCuotasConRetraso()}"></td>
-              <td th:text="${pago.getNumeroCuotasPagadas()}"></td>
-              <td th:text="${pago.getMontoTotalPagado()}"></td>
-              <td th:text="${pago.getSaldoPorPagar()}"></td>
+            <tr th:each="pago:${pagosArancel}">
+              <td th:text="${pago.id_arancel}"></td>
+              <td th:text="${pago.nombres}"></td>
+              <td th:text="${pago.rut}"></td>
+              <td th:text="${pago.tipoPago}"></td>
+              <td th:text="${pago.promedioPuntajeExamenes}"></td>
+              <td th:text="${pago.montoTotalArancel}"></td>
+              <td th:text="${pago.fechaUltimoPago}"></td>
+              <td th:text="${pago.numeroExamenesRendidos}"></td>
+              <td th:text="${pago.numeroTotalCuotasPactadas}"></td>
+              <td th:text="${pago.numeroCuotasPagadas}"></td>
+              <td th:text="${pago.montoTotalPagado}"></td>
+              <td th:text="${pago.saldoPorPagar}"></td>
+              <td th:text="${pago.numeroCuotasConRetraso}"></td>
+              <td th:text="${pago.plazoPago}"></td>
             </tr>
             </tbody>
           </table>

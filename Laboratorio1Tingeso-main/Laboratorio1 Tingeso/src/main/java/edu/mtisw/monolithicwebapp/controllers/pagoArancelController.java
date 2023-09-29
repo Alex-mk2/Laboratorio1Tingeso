@@ -14,7 +14,7 @@ public class pagoArancelController {
     @Autowired
     edu.mtisw.monolithicwebapp.services.estudianteService estudianteService;
 
-    @GetMapping("/calcular-arancel")
+    @GetMapping("/formulario-cuotas")
     public String crearPlanillaArancel(Model model) {
         boolean planillasGeneradas = pagoArancelService.calcularArancel();
         if (planillasGeneradas) {
@@ -23,7 +23,7 @@ public class pagoArancelController {
         return "formulario-cuotas";
     }
 
-    @GetMapping("/arancel")
+    @GetMapping("/mostrar-arancel")
     public String mostrarArancelEstudiante(Model model) {
         List<pagoArancelEntity> listaPagosArancel = pagoArancelService.listaArancel();
         model.addAttribute("pagosArancel", listaPagosArancel);

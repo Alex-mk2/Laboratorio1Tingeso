@@ -29,5 +29,6 @@ public class pagoArancelEntity {
     private Integer numeroCuotasConRetraso;
     private String nombres;
     private String rut;
-
+    private LocalDate plazoPago;
+    private boolean estadoCuota;
 }

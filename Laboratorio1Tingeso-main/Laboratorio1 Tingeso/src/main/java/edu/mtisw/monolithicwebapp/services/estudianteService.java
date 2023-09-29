@@ -40,4 +40,12 @@ public class estudianteService {
     public List<estudianteEntity> listaEstudiantes(){
         return estudianteRepository.findAll();
     }
+
+    public estudianteEntity obtenerAnioEgreso(int egreso){
+        return estudianteRepository.findEstudianteByEgreso(egreso);
+    }
+
+    public List<estudianteEntity> obtenerListaEgreso(int egreso){
+        return estudianteRepository.findListByEgreso(egreso);
+    }
 }
