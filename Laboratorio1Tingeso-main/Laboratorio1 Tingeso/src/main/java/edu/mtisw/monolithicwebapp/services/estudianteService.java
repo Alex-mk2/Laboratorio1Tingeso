@@ -48,4 +48,8 @@ public class estudianteService {
     public List<estudianteEntity> obtenerListaEgreso(int egreso){
         return estudianteRepository.findListByEgreso(egreso);
     }
+
+    public estudianteEntity findByIdEstudiante(Long id_estudiante){
+        return estudianteRepository.findByIdEstudiante(id_estudiante);
+    }
 }

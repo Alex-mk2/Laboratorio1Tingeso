@@ -15,9 +15,9 @@ public class PruebaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Long id_Prueba;
+    private Long idPrueba;
     @ManyToOne
-    @JoinColumn(name = "estudiante_id", referencedColumnName = "id_estudiante", nullable = false)
+    @JoinColumn(name = "idEstudiante", nullable = false)
     private estudianteEntity estudiante;
     private LocalDate fecha_examen;
     private Integer puntaje_obtenido;

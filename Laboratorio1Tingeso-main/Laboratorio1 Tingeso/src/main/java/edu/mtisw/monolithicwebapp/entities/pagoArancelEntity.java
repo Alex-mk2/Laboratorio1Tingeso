@@ -13,9 +13,9 @@ import java.time.LocalDate;
 public class pagoArancelEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_arancel;
+    private Long idArancel;
     @ManyToOne
-    @JoinColumn(name = "estudiante_id", referencedColumnName = "id_estudiante", nullable = false)
+    @JoinColumn(name = "idEstudiante", nullable = false)
     private estudianteEntity estudiante;
     private Integer numeroExamenesRendidos;
     private Double promedioPuntajeExamenes;
@@ -30,5 +30,5 @@ public class pagoArancelEntity {
     private String nombres;
     private String rut;
     private LocalDate plazoPago;
-    private boolean estadoCuota;
+    private String estadoCuota;
 }

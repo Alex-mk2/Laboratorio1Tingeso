@@ -2,7 +2,6 @@ package edu.mtisw.monolithicwebapp.repositories;
 import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 
@@ -15,4 +14,6 @@ public interface estudianteRepository extends JpaRepository<estudianteEntity, Lo
     estudianteEntity findEstudianteByEgreso(int egreso);
 
     List<estudianteEntity> findListByEgreso(int egreso);
+
+    estudianteEntity findByIdEstudiante(Long idEstudiante);
 }

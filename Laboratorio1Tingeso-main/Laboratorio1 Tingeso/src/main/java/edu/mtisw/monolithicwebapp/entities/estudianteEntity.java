@@ -3,8 +3,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -16,7 +14,7 @@ public class estudianteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Long id_estudiante;
+    private Long idEstudiante;
     private String nombres;
     private String apellidos;
     private String email;

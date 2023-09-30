@@ -35,6 +35,10 @@ public class pagoArancelService {
        return pagoArancelRepository.findPlanillaByEstudiante(estudiante);
     }
 
+    public List<pagoArancelEntity> buscarListaEstudiantePorRut(String rut){
+        return pagoArancelRepository.findEstudiantByRut(rut);
+    }
+
     public pagoArancelEntity crearPlanillaEstudiante(estudianteEntity estudiante) {
         pagoArancelEntity pagoArancel = new pagoArancelEntity();
         pagoArancel.setEstudiante(estudiante);
@@ -52,6 +56,7 @@ public class pagoArancelService {
         pagoArancel.setSaldoPorPagar(pagoPorCuota);
         pagoArancel.setFechaUltimoPago(LocalDate.now());
         pagoArancel.setPlazoPago(fechaPago());
+        pagoArancel.setEstadoCuota(calcularEstadoCuota(pagoArancel));
         return pagoArancel;
     }
 
@@ -166,4 +171,15 @@ public class pagoArancelService {
         return descuento;
     }
 
+    public String calcularEstadoCuota(pagoArancelEntity pagoArancel){
+        double montoTotalCuota = pagoArancel.getMontoTotalArancel();
+        double montoPagadoCuota = 2000;
+        if(montoPagadoCuota >= montoTotalCuota){
+            return "Pagada";
+        } else if (montoPagadoCuota > 0){
+            return "Proceso de pago";
+        }else{
+            return "Pendiente";
+        }
+    }
 }
