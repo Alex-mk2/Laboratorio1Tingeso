@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 
 @Service
 public class pagoArancelService {
@@ -19,7 +20,7 @@ public class pagoArancelService {
 
     private static final Double Arancel = 1500000.0;
 
-    public void guardarCuotas(pagoArancelEntity pagoArancel){
+    public void guardarArancel(pagoArancelEntity pagoArancel){
         pagoArancelRepository.save(pagoArancel);
     }
 
@@ -38,6 +39,29 @@ public class pagoArancelService {
     public List<pagoArancelEntity> buscarListaEstudiantePorRut(String rut){
         return pagoArancelRepository.findEstudiantByRut(rut);
     }
+
+    public List<pagoArancelEntity> buscarEstadoEstudiante(pagoArancelEntity filtro) {
+        String rut = filtro.getRut();
+        String estadoCuota = filtro.getEstadoCuota();
+        Double montoTotalArancel = filtro.getMontoTotalArancel();
+        Double montoTotalPagado = filtro.getMontoTotalPagado();
+        List<pagoArancelEntity> resultados = new ArrayList<>();
+        if (estadoCuota == null && montoTotalArancel == null && montoTotalPagado == null) {
+            return buscarListaEstudiantePorRut(rut);
+        }
+
+        for (pagoArancelEntity pagoArancel : buscarListaEstudiantePorRut(rut)) {
+            if ((estadoCuota == null || estadoCuota.equals(pagoArancel.getEstadoCuota())) &&
+                    (montoTotalArancel == null || montoTotalArancel.equals(pagoArancel.getMontoTotalArancel())) &&
+                    (montoTotalPagado == null || montoTotalPagado.equals(pagoArancel.getMontoTotalPagado()))) {
+                resultados.add(pagoArancel);
+            }
+        }
+        return resultados;
+    }
+
+
+
 
     public pagoArancelEntity crearPlanillaEstudiante(estudianteEntity estudiante) {
         pagoArancelEntity pagoArancel = new pagoArancelEntity();
@@ -66,7 +90,7 @@ public class pagoArancelService {
         for (estudianteEntity estudiante : listaEstudiante) {
             if (estudiante != null) {
                 pagoArancelEntity pagoArancel = crearPlanillaEstudiante(estudiante);
-                pagoArancelRepository.save(pagoArancel);
+                guardarArancel(pagoArancel);
                 lecturaEstudiante = true;
 
             }

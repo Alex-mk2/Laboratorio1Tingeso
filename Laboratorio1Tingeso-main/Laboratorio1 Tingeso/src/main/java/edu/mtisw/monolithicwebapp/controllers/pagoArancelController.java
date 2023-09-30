@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
+
 @Controller
 @RequestMapping
 public class pagoArancelController {
@@ -31,17 +31,11 @@ public class pagoArancelController {
         return "arancel";
     }
 
-    @GetMapping("/mostrar-cuotas-pago/{id_estudiante}")
-
-    public String mostrarCuotasDePago(@PathVariable String rut, @PathVariable Long idEstudiante, Model model){
-        estudianteEntity estudiante = estudianteService.findByIdEstudiante(idEstudiante);
-        if(estudiante!= null){
-            List<pagoArancelEntity> cuotasPago = pagoArancelService.buscarListaEstudiantePorRut(rut);
-            model.addAttribute("estudiante", estudiante);
-            model.addAttribute("cuotasPago", cuotasPago);
-            return "mostrar-cuotas-pago";
-        }else{
-            return "error";
-        }
+    @GetMapping("/buscar-estado-estudiante")
+    public String buscarEstadoEstudiante(@ModelAttribute("filtro") pagoArancelEntity filtro, Model model) {
+        List<pagoArancelEntity> resultados = pagoArancelService.buscarEstadoEstudiante(filtro);
+        model.addAttribute("resultados", resultados);
+        return "mostrar-cuotas-pago";
     }
 }
+
