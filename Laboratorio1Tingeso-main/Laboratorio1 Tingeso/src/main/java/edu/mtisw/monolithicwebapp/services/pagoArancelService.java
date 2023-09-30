@@ -40,28 +40,6 @@ public class pagoArancelService {
         return pagoArancelRepository.findEstudiantByRut(rut);
     }
 
-    public List<pagoArancelEntity> buscarEstadoEstudiante(pagoArancelEntity filtro) {
-        String rut = filtro.getRut();
-        String estadoCuota = filtro.getEstadoCuota();
-        Double montoTotalArancel = filtro.getMontoTotalArancel();
-        Double montoTotalPagado = filtro.getMontoTotalPagado();
-        List<pagoArancelEntity> resultados = new ArrayList<>();
-        if (estadoCuota == null && montoTotalArancel == null && montoTotalPagado == null) {
-            return buscarListaEstudiantePorRut(rut);
-        }
-
-        for (pagoArancelEntity pagoArancel : buscarListaEstudiantePorRut(rut)) {
-            if ((estadoCuota == null || estadoCuota.equals(pagoArancel.getEstadoCuota())) &&
-                    (montoTotalArancel == null || montoTotalArancel.equals(pagoArancel.getMontoTotalArancel())) &&
-                    (montoTotalPagado == null || montoTotalPagado.equals(pagoArancel.getMontoTotalPagado()))) {
-                resultados.add(pagoArancel);
-            }
-        }
-        return resultados;
-    }
-
-
-
 
     public pagoArancelEntity crearPlanillaEstudiante(estudianteEntity estudiante) {
         pagoArancelEntity pagoArancel = new pagoArancelEntity();

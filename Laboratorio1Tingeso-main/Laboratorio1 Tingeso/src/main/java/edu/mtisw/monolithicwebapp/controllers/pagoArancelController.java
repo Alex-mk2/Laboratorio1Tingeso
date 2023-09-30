@@ -31,11 +31,5 @@ public class pagoArancelController {
         return "arancel";
     }
 
-    @GetMapping("/buscar-estado-estudiante")
-    public String buscarEstadoEstudiante(@ModelAttribute("filtro") pagoArancelEntity filtro, Model model) {
-        List<pagoArancelEntity> resultados = pagoArancelService.buscarEstadoEstudiante(filtro);
-        model.addAttribute("resultados", resultados);
-        return "mostrar-cuotas-pago";
-    }
 }
 
