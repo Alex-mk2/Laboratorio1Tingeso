@@ -170,15 +170,22 @@ public class pagoArancelService {
         return descuento;
     }
 
-    public String calcularEstadoCuota(pagoArancelEntity pagoArancel){
+    public String calcularEstadoCuota(pagoArancelEntity pagoArancel) {
         double montoTotalCuota = pagoArancel.getMontoTotalArancel();
-        double montoPagadoCuota = 2000;
-        if(montoPagadoCuota >= montoTotalCuota){
+        double montoPagadoCuota = 1000;
+        int decimales = 2;
+        double montoTotalCuotaRedondeado = Math.round(montoTotalCuota * Math.pow(10, decimales)) / Math.pow(10, decimales);
+        double montoPagadoCuotaRedondeado = Math.round(montoPagadoCuota * Math.pow(10, decimales)) / Math.pow(10, decimales);
+        if (montoPagadoCuotaRedondeado == montoTotalCuotaRedondeado) {
             return "Pagada";
-        } else if (montoPagadoCuota > 0){
+        }else if (montoPagadoCuotaRedondeado > 0) {
             return "Proceso de pago";
-        }else{
+        }else if (montoPagadoCuotaRedondeado < 0.0) {
+            return "Error: Monto negativo";
+        }else if (montoPagadoCuotaRedondeado == 0.0) {
             return "Pendiente";
+        }else {
+            return null;
         }
     }
 }

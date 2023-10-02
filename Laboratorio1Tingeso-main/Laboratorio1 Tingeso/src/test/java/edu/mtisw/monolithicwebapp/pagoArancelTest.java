@@ -1,6 +1,7 @@
 package edu.mtisw.monolithicwebapp;
 import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
 import edu.mtisw.monolithicwebapp.services.pagoArancelService;
+import edu.mtisw.monolithicwebapp.entities.pagoArancelEntity;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -138,4 +139,40 @@ public class pagoArancelTest {
         assertEquals(0, resultado);
     }
 
+    @Test
+    public void testCuotaPagada() {
+        pagoArancelEntity pagoArancel = new pagoArancelEntity();
+        pagoArancel.setMontoTotalArancel(1000.0);
+        pagoArancel.setMontoTotalPagado(1000.0);
+        String resultado = pagoArancelService.calcularEstadoCuota(pagoArancel);
+        assertEquals("Pagada", resultado);
+    }
+
+    @Test
+    public void testCuotaEnProcesoDePago() {
+        pagoArancelEntity pagoArancel = new pagoArancelEntity();
+        pagoArancel.setMontoTotalArancel(2000.0);
+        double montoPagadoCuota = 1000;
+        pagoArancel.setMontoTotalPagado(montoPagadoCuota);
+        String resultado = pagoArancelService.calcularEstadoCuota(pagoArancel);
+        assertEquals("Proceso de pago", resultado);
+    }
+
+    @Test
+    public void testCuotaPendiente() {
+        pagoArancelEntity pagoArancel = new pagoArancelEntity();
+        pagoArancel.setMontoTotalArancel(1000.00);
+        pagoArancel.setMontoTotalPagado(0.0);
+        String resultado = pagoArancelService.calcularEstadoCuota(pagoArancel);
+        assertEquals("Pendiente", resultado);
+    }
+
+    @Test
+    public void testCuotaNegativa() {
+        pagoArancelEntity pagoArancel = new pagoArancelEntity();
+        pagoArancel.setMontoTotalArancel(1000.00);
+        pagoArancel.setMontoTotalPagado(-500.00);
+        String resultado = pagoArancelService.calcularEstadoCuota(pagoArancel);
+        assertEquals("Error: Monto negativo", resultado);
+    }
 }
