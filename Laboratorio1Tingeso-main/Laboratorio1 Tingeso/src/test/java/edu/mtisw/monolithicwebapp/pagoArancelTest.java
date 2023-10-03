@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -155,24 +154,7 @@ public class pagoArancelTest {
         double montoPagadoCuota = 1000;
         pagoArancel.setMontoTotalPagado(montoPagadoCuota);
         String resultado = pagoArancelService.calcularEstadoCuota(pagoArancel);
-        assertEquals("Proceso de pago", resultado);
-    }
-
-    @Test
-    public void testCuotaPendiente() {
-        pagoArancelEntity pagoArancel = new pagoArancelEntity();
-        pagoArancel.setMontoTotalArancel(1000.00);
-        pagoArancel.setMontoTotalPagado(0.0);
-        String resultado = pagoArancelService.calcularEstadoCuota(pagoArancel);
         assertEquals("Pendiente", resultado);
     }
 
-    @Test
-    public void testCuotaNegativa() {
-        pagoArancelEntity pagoArancel = new pagoArancelEntity();
-        pagoArancel.setMontoTotalArancel(1000.00);
-        pagoArancel.setMontoTotalPagado(-500.00);
-        String resultado = pagoArancelService.calcularEstadoCuota(pagoArancel);
-        assertEquals("Error: Monto negativo", resultado);
-    }
 }

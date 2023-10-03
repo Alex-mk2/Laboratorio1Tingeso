@@ -1,34 +1,35 @@
 package edu.mtisw.monolithicwebapp;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
-import static org.junit.Assert.assertEquals;
-@SpringBootTest
-public class EstudianteTest{
+import edu.mtisw.monolithicwebapp.services.estudianteService;
+import edu.mtisw.monolithicwebapp.repositories.estudianteRepository;
+
+@DataJpaTest
+public class EstudianteTest {
+
     @Autowired
-    edu.mtisw.monolithicwebapp.repositories.estudianteRepository estudianteRepository;
+    private estudianteService estudianteService;
     @Autowired
-    edu.mtisw.monolithicwebapp.repositories.pagoArancelRepository pagoArancelRepository;
+    private estudianteRepository estudianteRepository;
 
+    @Before
 
-
-
-
-    @Test
-    public void testDescuentoSubvencionado() {
-        estudianteEntity estudiante = new estudianteEntity();
-        estudiante.setTipo_establecimiento("Subvencionado");
-        //double resultado = descuentoPorTipoProcedencia(estudiante);
-        //assertEquals(0.1 * 1500000, resultado, 0.001);
+    public void setUp(){
+        estudianteService = new estudianteService();
     }
 
     @Test
-    public void testDescuentoPrivado() {
-        estudianteEntity estudiante = new estudianteEntity();
-        estudiante.setTipo_establecimiento("Privado");
-        //double resultado = descuentoPorTipoProcedencia(estudiante);
-        //assertEquals(0.0 * Arancel, resultado, 0.001);
+    public void testFindByIdEstudiante() {
+        Long idEstudiante = 1L;
+        estudianteEntity estudianteDePrueba = new estudianteEntity();
+        estudianteDePrueba.setIdEstudiante(idEstudiante);
+        estudianteDePrueba.setNombres("Nombre de prueba");
+        estudianteEntity resultado = estudianteService.findByIdEstudiante(idEstudiante);
+        assertEquals(idEstudiante, resultado.getIdEstudiante());
+        assertEquals("Nombre de prueba", resultado.getNombres());
     }
-
 }

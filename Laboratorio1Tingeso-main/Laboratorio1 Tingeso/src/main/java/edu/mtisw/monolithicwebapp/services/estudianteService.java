@@ -1,18 +1,17 @@
 package edu.mtisw.monolithicwebapp.services;
-
 import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class estudianteService {
+public class estudianteService{
+
     @Autowired
     edu.mtisw.monolithicwebapp.repositories.estudianteRepository estudianteRepository;
-    
+
     public ArrayList<estudianteEntity> obtenerEstudiante(){
         return (ArrayList<estudianteEntity>) estudianteRepository.findAll();
     }

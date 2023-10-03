@@ -56,6 +56,7 @@ public class pagoArancelService {
         pagoArancel.setPromedioPuntajeExamenes(0.0);
         pagoArancel.setNumeroTotalCuotasPactadas(numeroCuotasEstablecimiento);
         pagoArancel.setSaldoPorPagar(pagoPorCuota);
+        pagoArancel.setNumeroCuotasConRetraso(0);
         pagoArancel.setFechaUltimoPago(LocalDate.now());
         pagoArancel.setPlazoPago(fechaPago());
         pagoArancel.setEstadoCuota(calcularEstadoCuota(pagoArancel));
@@ -171,7 +172,7 @@ public class pagoArancelService {
     }
 
     public String calcularEstadoCuota(pagoArancelEntity pagoArancel) {
-        double montoTotalCuota = pagoArancel.getMontoTotalArancel();
+        Double montoTotalCuota = pagoArancel.getMontoTotalArancel();
         double montoPagadoCuota = 1000;
         int decimales = 2;
         double montoTotalCuotaRedondeado = Math.round(montoTotalCuota * Math.pow(10, decimales)) / Math.pow(10, decimales);
@@ -179,13 +180,9 @@ public class pagoArancelService {
         if (montoPagadoCuotaRedondeado == montoTotalCuotaRedondeado) {
             return "Pagada";
         }else if (montoPagadoCuotaRedondeado > 0) {
-            return "Proceso de pago";
-        }else if (montoPagadoCuotaRedondeado < 0.0) {
-            return "Error: Monto negativo";
-        }else if (montoPagadoCuotaRedondeado == 0.0) {
             return "Pendiente";
-        }else {
-            return null;
+        }else{
+            return "No registrado";
         }
     }
 }
