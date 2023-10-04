@@ -17,8 +17,6 @@ public class pagoArancelEntity {
     @ManyToOne
     @JoinColumn(name = "idEstudiante", nullable = false)
     private estudianteEntity estudiante;
-    private Integer numeroExamenesRendidos;
-    private Double promedioPuntajeExamenes;
     private Double montoTotalArancel;
     private String tipoPago;
     private Integer numeroTotalCuotasPactadas;

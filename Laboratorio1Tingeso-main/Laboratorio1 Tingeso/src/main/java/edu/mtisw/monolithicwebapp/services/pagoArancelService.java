@@ -32,14 +32,10 @@ public class pagoArancelService {
         return pagoArancelRepository.findEstudianteByRut(rut);
     }
 
-    public pagoArancelEntity verificarPlanilla(estudianteEntity estudiante){
-       return pagoArancelRepository.findPlanillaByEstudiante(estudiante);
+    public pagoArancelEntity buscarPlanillaEstudiante(estudianteEntity estudiante) {
+        pagoArancelEntity planillaExistente = pagoArancelRepository.findPlanillaByEstudiante(estudiante);
+        return planillaExistente;
     }
-
-    public List<pagoArancelEntity> buscarListaEstudiantePorRut(String rut){
-        return pagoArancelRepository.findEstudiantByRut(rut);
-    }
-
 
     public pagoArancelEntity crearPlanillaEstudiante(estudianteEntity estudiante) {
         pagoArancelEntity pagoArancel = new pagoArancelEntity();
@@ -52,16 +48,42 @@ public class pagoArancelService {
         double pagoTotal = Arancel  - descuentoEgreso - descuentoArancelProcedencia;
         double pagoPorCuota = pagoTotal / numeroCuotasEstablecimiento;
         pagoArancel.setMontoTotalArancel(pagoTotal);
-        pagoArancel.setNumeroExamenesRendidos(0);
-        pagoArancel.setPromedioPuntajeExamenes(0.0);
         pagoArancel.setNumeroTotalCuotasPactadas(numeroCuotasEstablecimiento);
         pagoArancel.setSaldoPorPagar(pagoPorCuota);
         pagoArancel.setNumeroCuotasConRetraso(0);
+        pagoArancel.setNumeroCuotasPagadas(0);
+        pagoArancel.setMontoTotalPagado(375000.0);
         pagoArancel.setFechaUltimoPago(LocalDate.now());
         pagoArancel.setPlazoPago(fechaPago());
-        pagoArancel.setEstadoCuota(calcularEstadoCuota(pagoArancel));
         return pagoArancel;
     }
+
+    public boolean actualizarCuotaEstudiante() {
+        List<estudianteEntity> listaEstudiantes = estudianteRepository.findAll();
+        boolean registroEstudiante = false;
+        for (estudianteEntity estudiante : listaEstudiantes) {
+            if (estudiante != null) {
+                pagoArancelEntity pagoCuota = buscarPlanillaEstudiante(estudiante);
+                if (pagoCuota != null) {
+                    double saldoPorPagar = pagoCuota.getSaldoPorPagar();
+                    double montoTotalPagado = pagoCuota.getMontoTotalPagado();
+                    if (saldoPorPagar == montoTotalPagado) {
+                        pagoCuota.setEstadoCuota("Pagado");
+                    } else if (saldoPorPagar > 0) {
+                        pagoCuota.setEstadoCuota("Pendiente");
+                    }
+                    pagoCuota.setFechaUltimoPago(LocalDate.now());
+                    pagoCuota.setNumeroCuotasPagadas(pagoCuota.getNumeroCuotasPagadas() + 1);
+                    double pagoTotal = pagoCuota.getMontoTotalArancel() - montoTotalPagado;
+                    pagoCuota.setPlazoPago(fechaPago());
+                    pagoArancelRepository.save(pagoCuota);
+                    registroEstudiante = true;
+                }
+            }
+        }
+        return registroEstudiante;
+    }
+
 
     public boolean calcularArancel() {
         List<estudianteEntity> listaEstudiante = estudianteRepository.findAll();
@@ -172,8 +194,8 @@ public class pagoArancelService {
     }
 
     public String calcularEstadoCuota(pagoArancelEntity pagoArancel) {
-        Double montoTotalCuota = pagoArancel.getMontoTotalArancel();
-        double montoPagadoCuota = 1000;
+        Double montoTotalCuota = pagoArancel.getSaldoPorPagar();
+        double montoPagadoCuota = pagoArancel.getMontoTotalPagado();
         int decimales = 2;
         double montoTotalCuotaRedondeado = Math.round(montoTotalCuota * Math.pow(10, decimales)) / Math.pow(10, decimales);
         double montoPagadoCuotaRedondeado = Math.round(montoPagadoCuota * Math.pow(10, decimales)) / Math.pow(10, decimales);

@@ -24,7 +24,7 @@
 <!-- Barra de navegación formulario cuotas-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
   <div class="container">
-    <a class="navbar-brand" th:href="@{/formulario-cuotas}">Generar formulario estudiante</a>
+    <a class="navbar-brand" th:href="@{/registrar-pago}">Generar formulario estudiante</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav"
             aria-expanded="false" aria-label="Toggle navigation">
@@ -43,35 +43,27 @@
             <thead>
             <tr>
               <th>id Arancel</th>
-              <th>Nombre</th>
+              <th>Nombres</th>
               <th>Rut</th>
-              <th>Tipo de Pago</th>
-              <th>Monto Total de Arancel</th>
-              <th>Fecha Último Pago</th>
-              <th>Número de Cuotas Pactadas</th>
-              <th>Número de Cuotas Pagadas</th>
-              <th>Monto Total Pagado</th>
-              <th>Saldo por Pagar</th>
-              <th>Número de Cuotas con Retraso</th>
-              <th> Fecha pago</th>
               <th>Estado cuota</th>
+              <th>Saldo por pagar</th>
+              <th>Fecha Último Pago</th>
+              <th>Numero de cuotas pagadas</th>
+              <th>Monto Total Pagado</th>
+              <th> Fecha pago</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="pago:${pagosArancel}">
-              <td th:text="${pago.idArancel}"></td>
-              <td th:text="${pago.nombres}"></td>
-              <td th:text="${pago.rut}"></td>
-              <td th:text="${pago.tipoPago}"></td>
-              <td th:text="${pago.montoTotalArancel}"></td>
-              <td th:text="${pago.fechaUltimoPago}"></td>
-              <td th:text="${pago.numeroTotalCuotasPactadas}"></td>
-              <td th:text="${pago.numeroCuotasPagadas}"></td>
-              <td th:text="${pago.montoTotalPagado}"></td>
-              <td th:text="${pago.saldoPorPagar}"></td>
-              <td th:text="${pago.numeroCuotasConRetraso}"></td>
-              <td th:text="${pago.plazoPago}"></td>
-              <td th:text="${pago.estadoCuota}"></td>
+            <tr th:each="actualizacion:${actualizacionEstudiante}">
+              <td th:text="${actualizacion.idArancel}"></td>
+              <td th:text="${actualizacion.nombres}"></td>
+              <td th:text="${actualizacion.rut}"></td>
+              <td th:text="${actualizacion.estadoCuota}"></td>
+              <td th:text="${actualizacion.saldoPorPagar}"></td>
+              <td th:text="${actualizacion.fechaUltimoPago}"></td>
+              <td th:text="${actualizacion.numeroCuotasPagadas}"></td>
+              <td th:text="${actualizacion.montoTotalPagado}"></td>
+              <td th:text="${actualizacion.plazoPago}"></td>
             </tr>
             </tbody>
           </table>

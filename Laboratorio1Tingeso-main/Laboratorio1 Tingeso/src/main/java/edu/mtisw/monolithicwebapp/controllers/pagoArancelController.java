@@ -31,5 +31,20 @@ public class pagoArancelController {
         return "arancel";
     }
 
+    @GetMapping("/registrar-pago")
+    public String actualizarCuotaEstudiante(Model model){
+        boolean planillaActualizada = pagoArancelService.actualizarCuotaEstudiante();
+        if(planillaActualizada){
+            model.addAttribute("planillaActualizada", true);
+        }
+        return "registrar-pago";
+    }
+
+    @GetMapping("/actualizar-estudiante")
+    public String actualizarEstudiante(Model model){
+        List<pagoArancelEntity> listaActualizada = pagoArancelService.listaArancel();
+        model.addAttribute("actualizacionEstudiante", listaActualizada);
+        return "actualizar-estudiante";
+    }
 }
 
