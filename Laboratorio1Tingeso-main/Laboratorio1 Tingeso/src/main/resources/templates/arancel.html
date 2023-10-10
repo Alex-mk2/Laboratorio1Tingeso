@@ -45,16 +45,14 @@
               <th>id Arancel</th>
               <th>Nombre</th>
               <th>Rut</th>
-              <th>Tipo de Pago</th>
+              <th>Tipo pago</th>
               <th>Monto Total de Arancel</th>
               <th>Fecha Último Pago</th>
               <th>Número de Cuotas Pactadas</th>
               <th>Número de Cuotas Pagadas</th>
               <th>Monto Total Pagado</th>
               <th>Saldo por Pagar</th>
-              <th>Número de Cuotas con Retraso</th>
               <th> Fecha pago</th>
-              <th>Estado cuota</th>
             </tr>
             </thead>
             <tbody>
@@ -69,9 +67,7 @@
               <td th:text="${pago.numeroCuotasPagadas}"></td>
               <td th:text="${pago.montoTotalPagado}"></td>
               <td th:text="${pago.saldoPorPagar}"></td>
-              <td th:text="${pago.numeroCuotasConRetraso}"></td>
               <td th:text="${pago.plazoPago}"></td>
-              <td th:text="${pago.estadoCuota}"></td>
             </tr>
             </tbody>
           </table>

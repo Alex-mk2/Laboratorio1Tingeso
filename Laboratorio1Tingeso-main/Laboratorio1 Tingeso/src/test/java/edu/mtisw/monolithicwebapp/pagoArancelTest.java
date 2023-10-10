@@ -1,13 +1,16 @@
 package edu.mtisw.monolithicwebapp;
 import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
-import edu.mtisw.monolithicwebapp.services.pagoArancelService;
 import edu.mtisw.monolithicwebapp.entities.pagoArancelEntity;
+import edu.mtisw.monolithicwebapp.services.pagoArancelService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.time.LocalDate;
+import org.mockito.Mockito;
+
 
 @SpringBootTest
 public class pagoArancelTest {
@@ -45,33 +48,6 @@ public class pagoArancelTest {
         estudiante.setTipo_establecimiento("Privado");
         double resultado = pagoArancelService.descuentoPorTipoProcedencia(estudiante);
         assertEquals(0.0 * 1500000, resultado, 0);
-    }
-
-    @Test
-    public void testDescuentoPrivadoFallo() {
-        estudianteEntity estudiante = new estudianteEntity();
-        estudiante.setTipo_establecimiento("Privado");
-        double resultado = pagoArancelService.descuentoPorTipoProcedencia(estudiante);
-        assertEquals(0.4 * 1500000, resultado, 0);
-        //Se espera que falle, ya que debe ser 0//
-    }
-
-    @Test
-    public void testDescuentoSubvencionadoFallo() {
-        estudianteEntity estudiante = new estudianteEntity();
-        estudiante.setTipo_establecimiento("Subvencionado");
-        double resultado = pagoArancelService.descuentoPorTipoProcedencia(estudiante);
-        assertEquals(0.5 * 1500000, resultado, 0);
-        //Se espera que falle, ya que el estudiante subvencionado tiene 10%//
-    }
-
-    @Test
-    public void testDescuentoMunicipalFallo() {
-        estudianteEntity estudiante = new estudianteEntity();
-        estudiante.setTipo_establecimiento("Municipal");
-        double resultado = pagoArancelService.descuentoPorTipoProcedencia(estudiante);
-        Assert.assertEquals(0.7 * 1500000, resultado, 0);
-        //Se espera que falle, ya que el estudiante municipal tiene 20%//
     }
 
     @Test
@@ -139,22 +115,62 @@ public class pagoArancelTest {
     }
 
     @Test
-    public void testCuotaPagada() {
-        pagoArancelEntity pagoArancel = new pagoArancelEntity();
-        pagoArancel.setMontoTotalArancel(1000.0);
-        pagoArancel.setMontoTotalPagado(1000.0);
-        String resultado = pagoArancelService.calcularEstadoCuota(pagoArancel);
-        assertEquals("Pagada", resultado);
+    public void testFechaPagoBeforeDay10() {
+        LocalDate fechaActualReal = LocalDate.of(2023, 10, 5);
+        LocalDate fechaDePago = pagoArancelService.fechaPago();
+        assertEquals(fechaActualReal.getYear(), fechaDePago.getYear());
+        assertEquals(fechaActualReal.getMonth(), fechaDePago.getMonth());
+        assertEquals(fechaActualReal.getDayOfMonth(), fechaDePago.getDayOfMonth());
     }
 
     @Test
-    public void testCuotaEnProcesoDePago() {
-        pagoArancelEntity pagoArancel = new pagoArancelEntity();
-        pagoArancel.setMontoTotalArancel(2000.0);
-        double montoPagadoCuota = 1000;
-        pagoArancel.setMontoTotalPagado(montoPagadoCuota);
-        String resultado = pagoArancelService.calcularEstadoCuota(pagoArancel);
-        assertEquals("Pendiente", resultado);
+    public void testFechaPagoAfterDay10() {
+        LocalDate fechaActualReal = LocalDate.of(2023, 10, 10);
+        LocalDate fechaDePago = pagoArancelService.fechaPago();
+        assertEquals(fechaActualReal.getYear(), fechaDePago.getYear());
+        assertEquals(fechaActualReal.getMonth(), fechaDePago.getMonth());
+        assertEquals(fechaActualReal.getDayOfMonth(), fechaDePago.getDayOfMonth());
     }
 
+    @Test
+    public void testCrearPlanillaEstudianteContado() {
+        estudianteEntity estudiante = new estudianteEntity();
+        String tipoPago = "Contado";
+        Mockito.when(pagoArancelService.descuentoPorEgreso(estudiante)).thenReturn(100);
+        pagoArancelEntity pagoArancel = pagoArancelService.crearPlanillaEstudiante(estudiante, tipoPago);
+        assertEquals("Contado", pagoArancel.getTipoPago());
+        assertEquals(750000.0, pagoArancel.getMontoTotalArancel(), 0.01); // Tolerancia de error de 0.01 debido a números flotantes
+    }
+
+    @Test
+    public void testDescuentoPorPruebaPromedioEntre950Y999() {
+        double promedioPuntaje = 975.0;
+        double descuentoEsperado = 0.10;
+        double descuentoCalculado = pagoArancelService.descuentoPorPrueba(promedioPuntaje);
+        assertEquals(descuentoEsperado, descuentoCalculado, 0); // Tolerancia de error de 0.01 debido a números flotantes
+    }
+
+    @Test
+    public void testDescuentoPorPruebaPromedioEntre900Y949() {
+        double promedioPuntaje = 925.0;
+        double descuentoEsperado = 0.05;
+        double descuentoCalculado = pagoArancelService.descuentoPorPrueba(promedioPuntaje);
+        assertEquals(descuentoEsperado, descuentoCalculado, 0);
+    }
+
+    @Test
+    public void testDescuentoPorPruebaPromedioEntre850Y899() {
+        double promedioPuntaje = 875.0;
+        double descuentoEsperado = 0.02;
+        double descuentoCalculado = pagoArancelService.descuentoPorPrueba(promedioPuntaje);
+        assertEquals(descuentoEsperado, descuentoCalculado, 0);
+    }
+
+    @Test
+    public void testDescuentoPorPruebaPromedioMenorA850() {
+        double promedioPuntaje = 800.0;
+        double descuentoEsperado = 0.0;
+        double descuentoCalculado = pagoArancelService.descuentoPorPrueba(promedioPuntaje);
+        assertEquals(descuentoEsperado, descuentoCalculado, 0);
+    }
 }

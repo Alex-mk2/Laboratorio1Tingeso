@@ -10,7 +10,8 @@ import java.time.temporal.ChronoUnit;
 
 
 @Service
-public class pagoArancelService {
+public class pagoArancelService{
+
     @Autowired
     pagoArancelRepository pagoArancelRepository;
     @Autowired
@@ -33,30 +34,38 @@ public class pagoArancelService {
     }
 
     public pagoArancelEntity buscarPlanillaEstudiante(estudianteEntity estudiante) {
-        pagoArancelEntity planillaExistente = pagoArancelRepository.findPlanillaByEstudiante(estudiante);
-        return planillaExistente;
+        return pagoArancelRepository.findPlanillaByEstudiante(estudiante);
     }
 
-    public pagoArancelEntity crearPlanillaEstudiante(estudianteEntity estudiante) {
+    public pagoArancelEntity crearPlanillaEstudiante(estudianteEntity estudiante, String tipoPago) {
         pagoArancelEntity pagoArancel = new pagoArancelEntity();
         pagoArancel.setEstudiante(estudiante);
         pagoArancel.setNombres(estudiante.getNombres());
         pagoArancel.setRut(estudiante.getRut());
-        int numeroCuotasEstablecimiento = cantidadCuotasEstablecimiento(estudiante);
-        int descuentoEgreso = descuentoPorEgreso(estudiante);
-        double descuentoArancelProcedencia = (descuentoPorTipoProcedencia(estudiante));
-        double pagoTotal = Arancel  - descuentoEgreso - descuentoArancelProcedencia;
-        double pagoPorCuota = pagoTotal / numeroCuotasEstablecimiento;
-        pagoArancel.setMontoTotalArancel(pagoTotal);
-        pagoArancel.setNumeroTotalCuotasPactadas(numeroCuotasEstablecimiento);
-        pagoArancel.setSaldoPorPagar(pagoPorCuota);
-        pagoArancel.setNumeroCuotasConRetraso(0);
-        pagoArancel.setNumeroCuotasPagadas(0);
-        pagoArancel.setMontoTotalPagado(375000.0);
-        pagoArancel.setFechaUltimoPago(LocalDate.now());
-        pagoArancel.setPlazoPago(fechaPago());
+        if("Contado".equals(tipoPago)) {
+            double montoContado = (1500000.0 / 2.0) - descuentoPorEgreso(estudiante);
+            pagoArancel.setTipoPago("Contado");
+            pagoArancel.setMontoTotalArancel(montoContado);
+        } else {
+            int numeroCuotasEstablecimiento = cantidadCuotasEstablecimiento(estudiante);
+            int descuentoEgreso = descuentoPorEgreso(estudiante);
+            double descuentoArancelProcedencia = descuentoPorTipoProcedencia(estudiante);
+            double pagoTotal = Arancel - descuentoEgreso - descuentoArancelProcedencia;
+            double pagoPorCuota = pagoTotal / numeroCuotasEstablecimiento;
+            pagoArancel.setTipoPago("Cuotas");
+            pagoArancel.setMontoTotalArancel(pagoTotal);
+            pagoArancel.setNumeroTotalCuotasPactadas(numeroCuotasEstablecimiento);
+            pagoArancel.setSaldoPorPagar(pagoPorCuota);
+            pagoArancel.setNumeroCuotasConRetraso(0);
+            pagoArancel.setNumeroCuotasPagadas(0);
+            pagoArancel.setMontoTotalPagado(375000.0);
+            pagoArancel.setFechaUltimoPago(LocalDate.now());
+            pagoArancel.setPlazoPago(fechaPago());
+        }
+
         return pagoArancel;
     }
+
 
     public boolean actualizarCuotaEstudiante() {
         List<estudianteEntity> listaEstudiantes = estudianteRepository.findAll();
@@ -67,15 +76,22 @@ public class pagoArancelService {
                 if (pagoCuota != null) {
                     double saldoPorPagar = pagoCuota.getSaldoPorPagar();
                     double montoTotalPagado = pagoCuota.getMontoTotalPagado();
-                    if (saldoPorPagar == montoTotalPagado) {
-                        pagoCuota.setEstadoCuota("Pagado");
-                    } else if (saldoPorPagar > 0) {
-                        pagoCuota.setEstadoCuota("Pendiente");
+                    LocalDate fechaPlazoPago = fechaPago();
+                    if (saldoPorPagar > 0 && LocalDate.now().isAfter(fechaPlazoPago)) {
+                        long mesesAtraso = ChronoUnit.MONTHS.between(fechaPlazoPago, LocalDate.now());
+                        double descuentoIntereses = atrasos(mesesAtraso);
+                        saldoPorPagar = saldoPorPagar * (1 + descuentoIntereses);
                     }
-                    pagoCuota.setFechaUltimoPago(LocalDate.now());
-                    pagoCuota.setNumeroCuotasPagadas(pagoCuota.getNumeroCuotasPagadas() + 1);
-                    double pagoTotal = pagoCuota.getMontoTotalArancel() - montoTotalPagado;
-                    pagoCuota.setPlazoPago(fechaPago());
+                    if(saldoPorPagar == montoTotalPagado) {
+                        pagoCuota.setEstadoCuota("Pagado");
+                        pagoCuota.setFechaUltimoPago(LocalDate.now());
+                        pagoCuota.setNumeroCuotasPagadas(pagoCuota.getNumeroCuotasPagadas() + 1);
+                        pagoCuota.setPlazoPago(fechaPago());
+                        pagoCuota.setSaldoPorPagar(saldoPorPagar);
+                    }else if (saldoPorPagar > 0) {
+                        pagoCuota.setEstadoCuota("Pendiente");
+                        pagoCuota.setPlazoPago(fechaPago());
+                    }
                     pagoArancelRepository.save(pagoCuota);
                     registroEstudiante = true;
                 }
@@ -84,22 +100,20 @@ public class pagoArancelService {
         return registroEstudiante;
     }
 
-
     public boolean calcularArancel() {
         List<estudianteEntity> listaEstudiante = estudianteRepository.findAll();
         boolean lecturaEstudiante = false;
-        for (estudianteEntity estudiante : listaEstudiante) {
+        for(estudianteEntity estudiante : listaEstudiante) {
             if (estudiante != null) {
-                pagoArancelEntity pagoArancel = crearPlanillaEstudiante(estudiante);
+                // Supongamos que el tipo de pago es "Contado" para todos los estudiantes
+                pagoArancelEntity pagoArancel = crearPlanillaEstudiante(estudiante, "Cuotas");
                 guardarArancel(pagoArancel);
                 lecturaEstudiante = true;
-
             }
         }
+
         return lecturaEstudiante;
     }
-
-
 
     public double descuentoPorTipoProcedencia(estudianteEntity estudiante) {
         String opcionPago = estudiante.getTipo_establecimiento();
@@ -152,14 +166,15 @@ public class pagoArancelService {
         return descuento;
     }
 
-    public LocalDate fechaPago(){
+    public LocalDate fechaPago() {
         LocalDate fechaActual = LocalDate.now();
-        LocalDate fechaDePago = LocalDate.of(fechaActual.getYear(), fechaActual.getMonth(), 5);
+        int diaDePago = 5;
         if (fechaActual.getDayOfMonth() > 10) {
-            fechaDePago = fechaDePago.plus(1, ChronoUnit.MONTHS);
+            fechaActual = fechaActual.plusMonths(1);
         }
-        return fechaDePago;
+        return fechaActual.withDayOfMonth(diaDePago);
     }
+
 
     public double descuentoPorPrueba(double promedioPuntaje){
         if(promedioPuntaje >= 950 && promedioPuntaje < 1000){
@@ -173,14 +188,14 @@ public class pagoArancelService {
         }
     }
 
-    public double atrasos() {
+    public double atrasos(long mesesAtraso) {
         LocalDate fechaActual = LocalDate.now();
         LocalDate fechaDePago = LocalDate.of(fechaActual.getYear(), fechaActual.getMonth(), 5);
         double descuento = 0.0;
         if (fechaActual.getDayOfMonth() > 10) {
             fechaDePago = fechaDePago.plus(1, ChronoUnit.MONTHS);
         }
-        long mesesAtraso = ChronoUnit.MONTHS.between(fechaDePago, fechaActual);
+        mesesAtraso = ChronoUnit.MONTHS.between(fechaDePago, fechaActual);
         if(mesesAtraso == 1){
             descuento = 0.03;
         } else if (mesesAtraso ==  2){
@@ -191,20 +206,5 @@ public class pagoArancelService {
             descuento = 0.15;
         }
         return descuento;
-    }
-
-    public String calcularEstadoCuota(pagoArancelEntity pagoArancel) {
-        Double montoTotalCuota = pagoArancel.getSaldoPorPagar();
-        double montoPagadoCuota = pagoArancel.getMontoTotalPagado();
-        int decimales = 2;
-        double montoTotalCuotaRedondeado = Math.round(montoTotalCuota * Math.pow(10, decimales)) / Math.pow(10, decimales);
-        double montoPagadoCuotaRedondeado = Math.round(montoPagadoCuota * Math.pow(10, decimales)) / Math.pow(10, decimales);
-        if (montoPagadoCuotaRedondeado == montoTotalCuotaRedondeado) {
-            return "Pagada";
-        }else if (montoPagadoCuotaRedondeado > 0) {
-            return "Pendiente";
-        }else{
-            return "No registrado";
-        }
     }
 }
