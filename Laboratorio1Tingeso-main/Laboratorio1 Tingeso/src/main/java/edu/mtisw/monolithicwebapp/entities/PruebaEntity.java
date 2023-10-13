@@ -21,4 +21,6 @@ public class PruebaEntity {
     private estudianteEntity estudiante;
     private LocalDate fecha_examen;
     private Integer puntaje_obtenido;
+    private LocalDate fecha_resultados;
+    private Long idEstudiante;
 }
