@@ -139,7 +139,7 @@ public class pagoArancelTest {
         Mockito.when(pagoArancelService.descuentoPorEgreso(estudiante)).thenReturn(100);
         pagoArancelEntity pagoArancel = pagoArancelService.crearPlanillaEstudiante(estudiante, tipoPago);
         assertEquals("Contado", pagoArancel.getTipoPago());
-        assertEquals(750000.0, pagoArancel.getMontoTotalArancel(), 0.01); // Tolerancia de error de 0.01 debido a números flotantes
+        assertEquals(750000.0, pagoArancel.getMontoTotalArancel(), 0); // Tolerancia de error de 0.01 debido a números flotantes
     }
 
     @Test
