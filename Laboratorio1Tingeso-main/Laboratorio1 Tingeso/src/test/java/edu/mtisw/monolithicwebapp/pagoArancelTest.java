@@ -5,27 +5,49 @@ import edu.mtisw.monolithicwebapp.services.pagoArancelService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import java.util.ArrayList;
+
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
-import org.mockito.Mockito;
-
+import edu.mtisw.monolithicwebapp.repositories.pagoArancelRepository;
+import edu.mtisw.monolithicwebapp.repositories.estudianteRepository;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 @SpringBootTest
+@RunWith(MockitoJUnitRunner.class)
 public class pagoArancelTest {
-    @Autowired
-    private edu.mtisw.monolithicwebapp.repositories.pagoArancelRepository pagoArancelRepository;
-    @Autowired
-    private edu.mtisw.monolithicwebapp.repositories.estudianteRepository estudianteRepository;
-    @Autowired
-    private edu.mtisw.monolithicwebapp.services.pagoArancelService pagoArancelService;
+
+    @Mock
+    private pagoArancelRepository pagoArancelRepository;
+
+    private estudianteRepository estudianteRepository;
+
+    private pagoArancelService pagoArancelService;
 
     @Before
-
-    public void setUp(){
-        pagoArancelService = new pagoArancelService();
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        pagoArancelService = new pagoArancelService(pagoArancelRepository);
     }
+
+    @Test
+    public void testGuardarArancel() {
+        pagoArancelEntity pagoArancelEjemplo = new pagoArancelEntity();
+        pagoArancelService.guardarArancel(pagoArancelEjemplo);
+        verify(pagoArancelRepository).save(pagoArancelEjemplo);
+    }
+
     @Test
     public void testDescuentoMunicipal() {
         estudianteEntity estudiante = new estudianteEntity();
@@ -131,15 +153,17 @@ public class pagoArancelTest {
         assertEquals(fechaActualReal.getMonth(), fechaDePago.getMonth());
         assertEquals(fechaActualReal.getDayOfMonth(), fechaDePago.getDayOfMonth());
     }
-
     @Test
-    public void testCrearPlanillaEstudianteContado() {
+    public void testCrearPlanillaEstudianteContado(){
         estudianteEntity estudiante = new estudianteEntity();
-        String tipoPago = "Contado";
-        Mockito.when(pagoArancelService.descuentoPorEgreso(estudiante)).thenReturn(100);
-        pagoArancelEntity pagoArancel = pagoArancelService.crearPlanillaEstudiante(estudiante, tipoPago);
-        assertEquals("Contado", pagoArancel.getTipoPago());
-        assertEquals(750000.0, pagoArancel.getMontoTotalArancel(), 0); // Tolerancia de error de 0.01 debido a números flotantes
+        estudiante.setRut("123459");
+        estudiante.setNombres("Alex");
+        when(estudiante.getNombres()).thenReturn("Alex");
+        when(estudiante.getRut()).thenReturn("123459");
+        when(estudiante.getIdEstudiante()).thenReturn(1L);
+        pagoArancelEntity resultado = pagoArancelService.crearPlanillaEstudiante(estudiante, "Contado");
+        assertEquals("Contado", resultado.getTipoPago());
+        assertEquals(0.0, resultado.getSaldoPorPagar(), 0);
     }
 
     @Test
@@ -147,7 +171,7 @@ public class pagoArancelTest {
         double promedioPuntaje = 975.0;
         double descuentoEsperado = 0.10;
         double descuentoCalculado = pagoArancelService.descuentoPorPrueba(promedioPuntaje);
-        assertEquals(descuentoEsperado, descuentoCalculado, 0); // Tolerancia de error de 0.01 debido a números flotantes
+        assertEquals(descuentoEsperado, descuentoCalculado, 0);
     }
 
     @Test
@@ -172,5 +196,52 @@ public class pagoArancelTest {
         double descuentoEsperado = 0.0;
         double descuentoCalculado = pagoArancelService.descuentoPorPrueba(promedioPuntaje);
         assertEquals(descuentoEsperado, descuentoCalculado, 0);
+    }
+
+
+    @Test
+    public void testBuscarPlanillaEstudiante() {
+        estudianteEntity estudiante = new estudianteEntity();
+        pagoArancelEntity planillaEsperada = new pagoArancelEntity();
+        when(pagoArancelRepository.findPlanillaByEstudiante(estudiante)).thenReturn(planillaEsperada);
+        pagoArancelEntity resultado = pagoArancelService.buscarPlanillaEstudiante(estudiante);
+        assertEquals(planillaEsperada, resultado);
+    }
+
+    @Test
+    public void testListaArancel() {
+        List<pagoArancelEntity> listaArancelesEsperada = new ArrayList<>();
+        when(pagoArancelRepository.findAll()).thenReturn(listaArancelesEsperada);
+        List<pagoArancelEntity> resultado = pagoArancelService.listaArancel();
+        assertEquals(listaArancelesEsperada, resultado);
+    }
+
+    @Test
+    public void testBuscarEstudiante() {
+        String rut = "123456789";
+        pagoArancelEntity estudiante = new pagoArancelEntity();
+        when(pagoArancelRepository.findEstudianteByRut(rut)).thenReturn(estudiante);
+        pagoArancelEntity resultado = pagoArancelService.buscarEstudiante(rut);
+        assertEquals(estudiante, resultado);
+    }
+
+    @Test
+    public void testCalcularArancelConEstudiantes() {
+        List<estudianteEntity> listaEstudiantes = new ArrayList<>();
+        when(estudianteRepository.findAll()).thenReturn(listaEstudiantes);
+        when(pagoArancelService.crearPlanillaEstudiante(any(estudianteEntity.class), eq("Cuotas"))).thenReturn(new pagoArancelEntity());
+        boolean resultado = pagoArancelService.calcularArancel();
+        assertTrue(resultado);
+        for (estudianteEntity estudiante : listaEstudiantes) {
+            verify(pagoArancelService).crearPlanillaEstudiante(estudiante, "Cuotas");
+            verify(pagoArancelService).guardarArancel(any(pagoArancelEntity.class));
+        }
+    }
+
+    @Test
+    public void testAtrasosSinDescuento() {
+        LocalDate fechaActual = LocalDate.of(2023, 10, 11); // Día después del 10 de octubre
+        double descuento = pagoArancelService.atrasos(fechaActual);
+        assertEquals(0.0, descuento, 0.001); // No debería haber descuento
     }
 }

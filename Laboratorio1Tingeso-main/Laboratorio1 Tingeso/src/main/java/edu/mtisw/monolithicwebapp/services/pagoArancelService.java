@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.time.temporal.ChronoUnit;
+import edu.mtisw.monolithicwebapp.repositories.estudianteRepository;
+import edu.mtisw.monolithicwebapp.repositories.pruebaRepository;
+
 
 
 @Service
@@ -15,11 +18,15 @@ public class pagoArancelService{
     @Autowired
     pagoArancelRepository pagoArancelRepository;
     @Autowired
-    edu.mtisw.monolithicwebapp.repositories.estudianteRepository estudianteRepository;
+    estudianteRepository estudianteRepository;
     @Autowired
-    edu.mtisw.monolithicwebapp.repositories.pruebaRepository pruebaRepository;
+    pruebaRepository pruebaRepository;
 
     private static final Double Arancel = 1500000.0;
+
+    public pagoArancelService(pagoArancelRepository pagoArancelRepository){
+        this.pagoArancelRepository = pagoArancelRepository;
+    }
 
     public void guardarArancel(pagoArancelEntity pagoArancel){
         pagoArancelRepository.save(pagoArancel);
@@ -105,7 +112,6 @@ public class pagoArancelService{
         boolean lecturaEstudiante = false;
         for(estudianteEntity estudiante : listaEstudiante) {
             if (estudiante != null) {
-                // Supongamos que el tipo de pago es "Contado" para todos los estudiantes
                 pagoArancelEntity pagoArancel = crearPlanillaEstudiante(estudiante, "Cuotas");
                 guardarArancel(pagoArancel);
                 lecturaEstudiante = true;
