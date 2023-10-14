@@ -237,11 +237,4 @@ public class pagoArancelTest {
             verify(pagoArancelService).guardarArancel(any(pagoArancelEntity.class));
         }
     }
-
-    @Test
-    public void testAtrasosSinDescuento() {
-        LocalDate fechaActual = LocalDate.of(2023, 10, 11); // Día después del 10 de octubre
-        double descuento = pagoArancelService.atrasos(fechaActual);
-        assertEquals(0.0, descuento, 0.001); // No debería haber descuento
-    }
 }

@@ -43,9 +43,13 @@ public class PruebaService{
         pruebaRepository.save(prueba);
     }
 
-    public ArrayList<PruebaEntity> obtenerEstudianteById(Long idEstudiante) {
-        return pruebaRepository.findEstudentByid(idEstudiante);
+
+    public ArrayList<PruebaEntity> findPruebaByEstudiante_IdEstudiante(Long idEstudiante) {
+        return pruebaRepository.findPruebaByEstudiante_IdEstudiante(idEstudiante);
     }
+
+
+
 
     private final Logger logger = LoggerFactory.getLogger(PruebaService.class);
 
@@ -154,7 +158,7 @@ public class PruebaService{
         if (estudiante == null) {
             return;
         }
-        Prueba.setIdEstudiante(estudiante.getIdEstudiante());
+        Prueba.setEstudiante(estudiante);
         if (Objects.equals(Puntaje, "")) {
             Prueba.setPuntaje_obtenido(150);
         } else if (Integer.parseInt(Puntaje) < 150 || Integer.parseInt(Puntaje) > 1000) {
@@ -183,7 +187,7 @@ public class PruebaService{
 
             return listafinal;
         } else {
-            return pruebaRepository.findEstudentByid(estudiante.getIdEstudiante());
+            return pruebaRepository.findPruebaByEstudiante_IdEstudiante(estudiante.getIdEstudiante());
         }
     }
 

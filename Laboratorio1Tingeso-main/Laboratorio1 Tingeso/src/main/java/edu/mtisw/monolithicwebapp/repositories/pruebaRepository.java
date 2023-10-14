@@ -10,6 +10,5 @@ import java.util.ArrayList;
 @Repository
 public interface pruebaRepository extends JpaRepository<PruebaEntity, Long>{
 
-
-    ArrayList<PruebaEntity> findEstudentByid(Long idEstudiante);
+    ArrayList<PruebaEntity> findPruebaByEstudiante_IdEstudiante(Long idEstudiante);
 }
