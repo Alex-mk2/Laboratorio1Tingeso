@@ -71,6 +71,8 @@ public class PruebaService{
             InputStreamReader reader = new InputStreamReader(file.getInputStream());
             CSVReader csvReader = new CSVReader(reader);
             String[] nextLine;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+
             while ((nextLine = csvReader.readNext()) != null) {
                 if (nextLine.length != 3) {
                     return "El archivo debe poseer 3 columnas: Rut, puntaje, fecha";
@@ -79,26 +81,21 @@ public class PruebaService{
                 String puntaje = nextLine[1];
                 String fecha = nextLine[2];
 
-                /*Se verifica que puntaje sea un número*/
                 if (!puntaje.matches("^[0-9]+$")) {
                     return "Puntaje debe ser un número";
                 }
-
-                /*Se verifica que fecha siga el formato de fecha*/
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                 try {
                     dateFormat.parse(fecha);
                 } catch (ParseException e) {
                     return "El campo 'fecha' no tiene un formato de fecha válido (dd-MM-yyyy).";
                 }
             }
-
-            /*Si cumple el formato se entrega string vacío*/
             return "";
         } catch (IOException | CsvValidationException e) {
             return "Error al intentar procesar archivo";
         }
     }
+
 
     @Generated
     public String GuardarNombreArchivo(MultipartFile file) {

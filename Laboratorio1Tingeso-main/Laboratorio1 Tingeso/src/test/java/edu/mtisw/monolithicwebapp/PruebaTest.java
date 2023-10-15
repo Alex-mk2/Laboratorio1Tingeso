@@ -1,5 +1,6 @@
 package edu.mtisw.monolithicwebapp;
 import edu.mtisw.monolithicwebapp.entities.PruebaEntity;
+import edu.mtisw.monolithicwebapp.services.estudianteService;
 import org.junit.Before;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -9,7 +10,6 @@ import edu.mtisw.monolithicwebapp.services.PruebaService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
@@ -17,6 +17,8 @@ import java.util.List;
 import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
 import java.time.LocalDate;
 import edu.mtisw.monolithicwebapp.entities.pagoArancelEntity;
+import org.springframework.mock.web.MockMultipartFile;
+import edu.mtisw.monolithicwebapp.repositories.estudianteRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class PruebaTest{
@@ -24,11 +26,16 @@ public class PruebaTest{
     private pruebaRepository pruebaRepository;
     @InjectMocks
     private PruebaService pruebaService;
+    @Mock
+    private estudianteRepository estudianteRepository;
+    @InjectMocks
+    private estudianteService estudianteService;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        pruebaService = new PruebaService(pruebaRepository);
+        estudianteService = new estudianteService(estudianteRepository);
+
     }
 
     @Test
@@ -78,6 +85,80 @@ public class PruebaTest{
         when(pruebaRepository.findAll()).thenReturn(pruebas);
         List<PruebaEntity> resultado = pruebaService.ObtenerDatosPruebas();
         assertEquals(pruebas, resultado);
+    }
+
+    @Test
+    public void testVerificarArchivoArchivoVacio() {
+        MockMultipartFile emptyFile = new MockMultipartFile("archivo.csv", new byte[0]);
+        String resultado = pruebaService.VerificarArchivo(emptyFile);
+        assertEquals("Archivo vacío", resultado);
+    }
+
+    @Test
+    public void testVerificarArchivoFormatoIncorrecto() {
+        String contenido = "Rut,Puntaje\n123456789,95";
+        MockMultipartFile invalidFile = new MockMultipartFile("archivo.csv", "archivo.csv", "text/csv", contenido.getBytes());
+        String resultado = pruebaService.VerificarArchivo(invalidFile);
+        assertEquals("El archivo debe poseer 3 columnas: Rut, puntaje, fecha", resultado);
+    }
+
+    @Test
+    public void testVerificarArchivoPuntajeNoNumero() {
+        String contenido = "Rut,Puntaje,fecha\n123456789,NoEsNumero,01-01-2022";
+        MockMultipartFile invalidPuntajeFile = new MockMultipartFile("archivo.csv", "archivo.csv", "text/csv", contenido.getBytes());
+        String resultado = pruebaService.VerificarArchivo(invalidPuntajeFile);
+        assertEquals("Puntaje debe ser un número", resultado);
+    }
+
+    @Test
+    public void testVerificarArchivoArchivoValido() {
+        String contenido = "Rut,Puntaje,fecha\n123456789,95,01-01-2022";
+        MockMultipartFile validFile = new MockMultipartFile("archivo.csv", "archivo.csv", "text/csv", contenido.getBytes());
+        String resultado = pruebaService.VerificarArchivo(validFile);
+        assertEquals("", resultado);
+    }
+
+    @Test
+    public void testEliminarPruebas() {
+        PruebaEntity prueba1 = new PruebaEntity();
+        prueba1.setIdPrueba(1L);
+        PruebaEntity prueba2 = new PruebaEntity();
+        prueba2.setIdPrueba(2L);
+        List<PruebaEntity> pruebas = new ArrayList<>();
+        pruebas.add(prueba1);
+        pruebas.add(prueba2);
+        pruebaService.EliminarPruebas((ArrayList<PruebaEntity>) pruebas);
+        verify(pruebaRepository).deleteAll(pruebas);
+    }
+
+
+    @Test
+    public void testObtenerPruebasPorRutEstudianteEstudianteExiste() {
+        String rutExistente = "123456789";
+        estudianteEntity estudiante = new estudianteEntity();
+        estudiante.setIdEstudiante(1L);
+        when(estudianteRepository.findEstudianteByRut(rutExistente)).thenReturn(estudiante);
+        List<PruebaEntity> pruebasFicticias = new ArrayList<>();
+        when(pruebaRepository.findPruebaByEstudiante_IdEstudiante(estudiante.getIdEstudiante())).thenReturn((ArrayList<PruebaEntity>) pruebasFicticias);
+        List<PruebaEntity> resultado = pruebaService.ObtenerPruebasPorRutEstudiante(rutExistente);
+        assertEquals(pruebasFicticias, resultado);
+    }
+
+    @Test
+    public void testPromediosPruebasEstudianteConPruebasVacias() {
+        List<PruebaEntity> pruebasVacias = new ArrayList<>();
+        Integer resultado = pruebaService.PromediosPruebasEstudiante((ArrayList<PruebaEntity>) pruebasVacias);
+        assertEquals(0, resultado);
+    }
+
+    @Test
+    public void testPromediosPruebasEstudianteConPruebasNoVacias() {
+        List<PruebaEntity> pruebasNoVacias = new ArrayList<>();
+        pruebasNoVacias.add(new PruebaEntity(1L, null, null, 90, null));
+        pruebasNoVacias.add(new PruebaEntity(2L, null, null, 85, null));
+        pruebasNoVacias.add(new PruebaEntity(3L, null, null, 75, null));
+        Integer resultado = pruebaService.PromediosPruebasEstudiante((ArrayList<PruebaEntity>) pruebasNoVacias);
+        assertEquals(83, resultado);
     }
 }
 
