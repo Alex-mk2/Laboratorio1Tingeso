@@ -6,12 +6,13 @@ import edu.mtisw.monolithicwebapp.services.PruebaService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.ui.Model;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 
 
 @Controller
-@RestController
+@RequestMapping
 public class PruebaController{
 
     @Autowired
@@ -19,17 +20,14 @@ public class PruebaController{
 
     @GetMapping("/uploadData")
     public String uploadData(){
-        return "updateTest";
+        return "uploadData";
     }
     @PostMapping("/uploadData")
-    public String uploadData(@RequestParam("file") MultipartFile file) {
-        try {
-            pruebaService.GuardarNombreArchivo(file);
-            pruebaService.LeerArchivoCsv("Pruebas.csv");
-            return "Archivo cargado con éxito";
-        } catch (Exception e) {
-            return "Error al procesar el archivo: " + e.getMessage();
-        }
+    public String upload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+        pruebaService.GuardarNombreArchivo(file);
+        redirectAttributes.addFlashAttribute("mensaje", "¡Archivo cargado correctamente!");
+        pruebaService.LeerArchivoCsv("Prueba.csv");
+        return "redirect:/fileUpload";
     }
 
     @GetMapping("/VisualizarPruebas")
