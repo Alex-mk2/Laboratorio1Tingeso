@@ -23,11 +23,10 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
 import edu.mtisw.monolithicwebapp.entities.estudianteEntity;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-
+import edu.mtisw.monolithicwebapp.repositories.pruebaRepository;
 import java.util.Objects;
 
 @Service
@@ -38,6 +37,10 @@ public class PruebaService{
     estudianteRepository estudianteRepository;
     @Autowired
     pagoArancelRepository pagoArancelRepository;
+
+    public PruebaService(pruebaRepository pruebaRepository){
+        this.pruebaRepository = pruebaRepository;
+    }
 
     public void guardarPruebaEstudiante(PruebaEntity prueba) {
         pruebaRepository.save(prueba);
