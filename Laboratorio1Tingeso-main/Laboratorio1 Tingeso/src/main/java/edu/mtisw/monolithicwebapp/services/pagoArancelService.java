@@ -86,8 +86,7 @@ public class pagoArancelService{
                     LocalDate fechaPlazoPago = fechaPago();
                     if (saldoPorPagar > 0 && LocalDate.now().isAfter(fechaPlazoPago)) {
                         long mesesAtraso = ChronoUnit.MONTHS.between(fechaPlazoPago, LocalDate.now());
-                        double descuentoIntereses = atrasos(mesesAtraso);
-                        saldoPorPagar = saldoPorPagar * (1 + descuentoIntereses);
+
                     }
                     if(saldoPorPagar == montoTotalPagado) {
                         pagoCuota.setEstadoCuota("Pagado");
@@ -202,13 +201,13 @@ public class pagoArancelService{
             fechaDePago = fechaDePago.plus(1, ChronoUnit.MONTHS);
         }
         mesesAtraso = ChronoUnit.MONTHS.between(fechaDePago, fechaActual);
-        if(mesesAtraso == 1){
+        if(mesesAtraso == 1) {
             descuento = 0.03;
-        } else if (mesesAtraso ==  2){
+        }else if (mesesAtraso == 2) {
             descuento = 0.06;
-        } else if (mesesAtraso == 3){
+        }else if (mesesAtraso == 3) {
             descuento = 0.09;
-        } else if (descuento > 3){
+        }else if (mesesAtraso > 3) {
             descuento = 0.15;
         }
         return descuento;

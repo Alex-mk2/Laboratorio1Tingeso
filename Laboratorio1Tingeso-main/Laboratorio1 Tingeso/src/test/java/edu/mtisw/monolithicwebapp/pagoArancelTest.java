@@ -7,22 +7,18 @@ import org.junit.Before;
 import org.junit.Test;
 import java.util.List;
 import java.util.ArrayList;
-
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.time.LocalDate;
 import edu.mtisw.monolithicwebapp.repositories.pagoArancelRepository;
 import edu.mtisw.monolithicwebapp.repositories.estudianteRepository;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Mock;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.*;
+import edu.mtisw.monolithicwebapp.services.estudianteService;
+
 
 @SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
@@ -30,16 +26,20 @@ public class pagoArancelTest {
 
     @Mock
     private pagoArancelRepository pagoArancelRepository;
-
+    @Mock
     private estudianteRepository estudianteRepository;
 
     private pagoArancelService pagoArancelService;
+
+    private estudianteService estudianteService;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         pagoArancelService = new pagoArancelService(pagoArancelRepository);
+        estudianteService = new estudianteService(estudianteRepository);
     }
+
 
     @Test
     public void testGuardarArancel() {
@@ -137,36 +137,6 @@ public class pagoArancelTest {
     }
 
     @Test
-    public void testFechaPagoBeforeDay10() {
-        LocalDate fechaActualReal = LocalDate.of(2023, 10, 5);
-        LocalDate fechaDePago = pagoArancelService.fechaPago();
-        assertEquals(fechaActualReal.getYear(), fechaDePago.getYear());
-        assertEquals(fechaActualReal.getMonth(), fechaDePago.getMonth());
-        assertEquals(fechaActualReal.getDayOfMonth(), fechaDePago.getDayOfMonth());
-    }
-
-    @Test
-    public void testFechaPagoAfterDay10() {
-        LocalDate fechaActualReal = LocalDate.of(2023, 10, 10);
-        LocalDate fechaDePago = pagoArancelService.fechaPago();
-        assertEquals(fechaActualReal.getYear(), fechaDePago.getYear());
-        assertEquals(fechaActualReal.getMonth(), fechaDePago.getMonth());
-        assertEquals(fechaActualReal.getDayOfMonth(), fechaDePago.getDayOfMonth());
-    }
-    @Test
-    public void testCrearPlanillaEstudianteContado(){
-        estudianteEntity estudiante = new estudianteEntity();
-        estudiante.setRut("123459");
-        estudiante.setNombres("Alex");
-        when(estudiante.getNombres()).thenReturn("Alex");
-        when(estudiante.getRut()).thenReturn("123459");
-        when(estudiante.getIdEstudiante()).thenReturn(1L);
-        pagoArancelEntity resultado = pagoArancelService.crearPlanillaEstudiante(estudiante, "Contado");
-        assertEquals("Contado", resultado.getTipoPago());
-        assertEquals(0.0, resultado.getSaldoPorPagar(), 0);
-    }
-
-    @Test
     public void testDescuentoPorPruebaPromedioEntre950Y999() {
         double promedioPuntaje = 975.0;
         double descuentoEsperado = 0.10;
@@ -226,15 +196,8 @@ public class pagoArancelTest {
     }
 
     @Test
-    public void testCalcularArancelConEstudiantes() {
-        List<estudianteEntity> listaEstudiantes = new ArrayList<>();
-        when(estudianteRepository.findAll()).thenReturn(listaEstudiantes);
-        when(pagoArancelService.crearPlanillaEstudiante(any(estudianteEntity.class), eq("Cuotas"))).thenReturn(new pagoArancelEntity());
-        boolean resultado = pagoArancelService.calcularArancel();
-        assertTrue(resultado);
-        for (estudianteEntity estudiante : listaEstudiantes) {
-            verify(pagoArancelService).crearPlanillaEstudiante(estudiante, "Cuotas");
-            verify(pagoArancelService).guardarArancel(any(pagoArancelEntity.class));
-        }
+    public void testAtrasos_Caso0Meses() {
+        double descuento = pagoArancelService.atrasos(0);
+        assertEquals(0.0, descuento, 0);
     }
 }

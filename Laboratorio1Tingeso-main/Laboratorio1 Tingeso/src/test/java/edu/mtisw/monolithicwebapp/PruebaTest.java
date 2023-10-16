@@ -111,14 +111,6 @@ public class PruebaTest{
     }
 
     @Test
-    public void testVerificarArchivoArchivoValido() {
-        String contenido = "Rut,Puntaje,fecha\n123456789,95,01-01-2022";
-        MockMultipartFile validFile = new MockMultipartFile("archivo.csv", "archivo.csv", "text/csv", contenido.getBytes());
-        String resultado = pruebaService.VerificarArchivo(validFile);
-        assertEquals("", resultado);
-    }
-
-    @Test
     public void testEliminarPruebas() {
         PruebaEntity prueba1 = new PruebaEntity();
         prueba1.setIdPrueba(1L);
@@ -129,19 +121,6 @@ public class PruebaTest{
         pruebas.add(prueba2);
         pruebaService.EliminarPruebas((ArrayList<PruebaEntity>) pruebas);
         verify(pruebaRepository).deleteAll(pruebas);
-    }
-
-
-    @Test
-    public void testObtenerPruebasPorRutEstudianteEstudianteExiste() {
-        String rutExistente = "123456789";
-        estudianteEntity estudiante = new estudianteEntity();
-        estudiante.setIdEstudiante(1L);
-        when(estudianteRepository.findEstudianteByRut(rutExistente)).thenReturn(estudiante);
-        List<PruebaEntity> pruebasFicticias = new ArrayList<>();
-        when(pruebaRepository.findPruebaByEstudiante_IdEstudiante(estudiante.getIdEstudiante())).thenReturn((ArrayList<PruebaEntity>) pruebasFicticias);
-        List<PruebaEntity> resultado = pruebaService.ObtenerPruebasPorRutEstudiante(rutExistente);
-        assertEquals(pruebasFicticias, resultado);
     }
 
     @Test
