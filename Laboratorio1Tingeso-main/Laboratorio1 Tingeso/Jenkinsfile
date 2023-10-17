@@ -1,0 +1,38 @@
+pipeline{
+    agent any
+    tools{
+        maven "maven"
+    }
+    stages{
+        stage("Build JAR FILE"){
+            steps{
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Alex-mk2/Laboratorio1Tingeso.git']])
+                sh "mvn clean install"
+            }
+        }
+        stage("Test"){
+            steps{
+                sh "mvn test"
+            }
+        }
+
+        stage("Build Docker Image"){
+            steps{
+                sh "docker build -t alexmk2/lab1tingeso ."
+            }
+        }
+        stage("Build Push Docker Image"){
+            steps{
+                withCredentials([usernamePassword(credentialsId: '0985f3f1-0f43-447a-ba4d-487e6886eed0', passwordVariable: 'alex31245', usernameVariable: 'alexmk2')]){
+
+                }
+                sh "docker push alexmk2/lab1tingeso"
+            }
+        }
+    }
+    post{
+        always{
+            sh "docker logout"
+        }
+    }
+}
