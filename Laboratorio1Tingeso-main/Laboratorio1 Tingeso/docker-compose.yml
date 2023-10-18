@@ -11,7 +11,7 @@ services:
     depends_on:
       - app
       - app2
-      - app3
+
 
 
   mysql-db:
@@ -56,17 +56,4 @@ services:
     depends_on:
       - mysql-db
 
-  app3:
-    container_name: lab1tingeso3
-    image: alexmk2/lab1tingeso
-    ports:
-      - "8093:8090"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/tingeso?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=alex31245
-    deploy:
-      restart_policy:
-        condition: on-failure
-    depends_on:
-      - mysql-db
+
